@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% block content %}
+
+<h2>Upload Journal Article</h2>
+
+<form action="{{ url_for('upload_journal') }}" method="POST" enctype="multipart/form-data">
+    <label>Title *</label>
+    <input type="text" name="title" required class="form-control">
+
+    <label>Select PDF *</label>
+    <input type="file" name="file" accept="application/pdf" required class="form-control">
+
+    <button type="submit" class="btn btn-primary mt-3">Upload PDF</button>
+</form>
+
+<hr>
+
+<h3>Uploaded Journals</h3>
+<table class="table table-bordered">
+    <tr>
+        <th>Title</th>
+        <th>File</th>
+        <th>Uploaded At</th>
+    </tr>
+
+    {% for j in journals %}
+    <tr>
+        <td>{{ j.Name }}</td>
+        <td>{{ j.Details }}</td>
+        <td>{{ j.Timestamp }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

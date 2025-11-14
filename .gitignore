@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment & secrets
+.env
+service_account.json
+client_secret.json
+
+# Databases
+*.db
+*.sqlite3
+
+# VSCode / System
+.vscode/
+.DS_Store
+
+# Uploads / Temp
+static/uploads/
+instance/

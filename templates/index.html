@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Home — Array Research{% endblock %}
+{% block content %}
+
+<!-- ================= HERO SECTION ================= -->
+<section class="hero-section" id="hero">
+  <div id="particles-js"></div>
+
+  <div class="hero-content" data-aos="fade-up">
+    <h1 class="hero-title">
+      Empowering <span class="gradient-text">Research Excellence</span>
+    </h1>
+    <p class="hero-subtitle">
+      End-to-end PhD support — from thesis writing, data analysis, plagiarism removal, to Scopus-indexed publication.
+    </p>
+
+    <div class="hero-buttons">
+      <a href="{{ url_for('services') }}" class="btn btn-primary big-btn">Explore Services</a>
+      <a href="{{ url_for('book_service', service_name='phd-thesis-writing') }}" class="btn btn-outline big-btn">Book a Service</a>
+    </div>
+
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-number" data-count="1500">0</div>
+        <p>PhD Scholars Mentored</p>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-count="600">0</div>
+        <p>Doctoral Completions</p>
+      </div>
+      <div class="stat">
+        <div class="stat-number" data-count="10000">0</div>
+        <p>Research Papers Delivered</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= SERVICES SECTION ================= -->
+<section class="features-section" data-aos="fade-up">
+  <h2 class="section-title">Our Core Services</h2>
+
+  <div class="services-grid">
+  {% for s in services %}
+  <div class="service-card" data-aos="fade-up">
+      <img src="{{ url_for('static', filename='images/services/' ~ s.image) }}" class="service-icon" alt="{{ s.title }}">
+
+
+      <h3>{{ s.title }}</h3>
+      <p>{{ s.description }}</p>
+      <a href="{{ url_for('book_service', service_name=s.title|lower|replace(' ', '-') ) }}" class="btn-service">Book Now</a>
+  </div>
+  {% endfor %}
+</div>
+
+
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonial-section" data-aos="zoom-in">
+  <h2 class="section-title">What Scholars Say</h2>
+
+  <div class="swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide testimonial-card">
+        <p>“Array Research helped me publish in Scopus journals without rejection. Highly recommended!”</p>
+        <h4>- Dr. Kavita Sharma</h4>
+      </div>
+      <div class="swiper-slide testimonial-card">
+        <p>“Their PhD thesis guidance was beyond expectations — topic selection to viva support!”</p>
+        <h4>- Prof. Arjun Patel</h4>
+      </div>
+      <div class="swiper-slide testimonial-card">
+        <p>“Their plagiarism removal & rewriting support saved my submission deadline!”</p>
+        <h4>- Nancy Williams</h4>
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+</section>
+
+
+<!-- Blog Preview -->
+<section class="blog-section" data-aos="fade-up">
+  <h2 class="section-title">Latest Articles</h2>
+  <div class="blog-grid">
+    {% for post in blog_posts %}
+    <div class="blog-card">
+      <div class="blog-img-wrapper">
+        <img src="{{ url_for('static', filename='images/' + post.image) }}" alt="{{ post.title }}">
+      </div>
+      <h3>{{ post.title }}</h3>
+      <p>{{ post.excerpt }}</p>
+      <a href="#" class="btn-outline-sm">Read More →</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+
+
+<!-- ================= CTA SECTION ================= -->
+<section class="cta-section" data-aos="zoom-in">
+  <h2>Start Your Research Journey Today 🚀</h2>
+  <p>Join 1,500+ scholars who trusted us for publication, thesis help & academic excellence.</p>
+  <a href="{{ url_for('book_service', service_name='phd-thesis-writing') }}" class="cta-btn">🚀 Book a Service Now</a>
+  </a>
+</section>
+
+{% endblock %}

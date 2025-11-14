@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} — Array Research{% endblock %}
+
+{% block content %}
+<section class="section blog-detail">
+  <div class="container">
+    <!-- Blog Header -->
+    <article class="post-detail">
+      <h1 class="blog-title">{{ post.title }}</h1>
+      <div class="blog-meta">
+        <p>By <strong>{{ post.author }}</strong> • {{ post.date }} • {{ post.read_time }}</p>
+      </div>
+
+      <!-- Blog Image -->
+      {% if post.image %}
+      <div class="blog-cover">
+        <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.title }}">
+      </div>
+      {% endif %}
+
+      <!-- Blog Content -->
+      <div class="blog-content">
+        {{ post.content | safe }}
+      </div>
+
+      <hr class="divider">
+
+      <!-- Back Button -->
+      <div class="back-link">
+        <a href="{{ url_for('blog') }}" class="btn btn-secondary">← Back to Blog</a>
+      </div>
+    </article>
+  </div>
+</section>
+{% endblock %}

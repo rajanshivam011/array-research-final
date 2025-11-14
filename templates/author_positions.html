@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Author Positions{% endblock %}
+
+{% block content %}
+<section class="section dark">
+    <div class="container">
+        <h2 class="section-title">Author Positions (Excel Auto Loaded)</h2>
+
+        <div class="excel-wrapper">
+            {{ table|safe }}
+        </div>
+    </div>
+</section>
+
+<style>
+    .excel-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .excel-table th, .excel-table td {
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .excel-wrapper {
+        overflow-x: auto;
+        backdrop-filter: blur(10px);
+    }
+</style>
+{% endblock %}

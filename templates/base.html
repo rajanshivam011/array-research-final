@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{% block title %}Array Research{% endblock %}</title>
+
+<!-- External CSS Libraries -->
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+<!-- Main Styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+
+<!-- 🔹 Header -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Array Research Logo" class="nav-logo">
+      <span class="logo-text">Array Research</span>
+    </a>
+
+
+    <nav class="nav">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <a href="{{ url_for('services') }}">Services</a>
+      <a href="{{ url_for('programs') }}">Programs</a>
+      <a href="{{ url_for('blog') }}">Blog</a>
+      <a href="{{ url_for('event') }}">Event</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+      <a href="{{ url_for('refer') }}">Refer Friends</a>
+    </nav>
+
+    <div class="nav-auth">
+      <a href="{{ url_for('login') }}" class="btn-nav btn-outline-sm">Login</a>
+      <a href="{{ url_for('signup') }}" class="btn-nav btn-primary-sm">Sign Up</a>
+    </div>
+
+  </div>
+</header>
+
+<!-- 🔹 Content (no container wrapper so hero becomes full screen) -->
+{% block content %}{% endblock %}
+
+<!-- 🔹 Footer -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>Copyright © {{ now.year }} ArrayResearch India.</p>
+  </div>
+</footer>
+
+<!-- JS Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+<!-- Init AOS -->
+<script>AOS.init({ duration: 1100, once: true });</script>
+
+<!-- Main Script -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

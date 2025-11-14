@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Data Explorer — Array Research{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>Uploaded Excel — All Sheets</h1>
+    <p>View every sheet and row from the uploaded file. Download original: 
+      {% if excel_filename %}
+      <a class="btn btn-small" href="{{ url_for('static', filename='data/' + excel_filename) }}" download>{{ excel_filename }}</a>
+      {% endif %}
+    </p>
+  </div>
+</section>
+
+<div class="container">
+  {% if error %}
+    <div class="alert-alert">{{ error }}</div>
+  {% else %}
+    <div class="sheets-list">
+      <!-- List of sheet names -->
+      <ul class="sheet-nav">
+        {% for sheet_name in sheets.keys() %}
+          <li><a href="#sheet-{{ loop.index }}">{{ sheet_name }}</a></li>
+        {% endfor %}
+      </ul>
+
+      {% for sheet_name, sheet_data in sheets.items() %}
+        <section id="sheet-{{ loop.index }}" class="sheet-section">
+          <h2>{{ sheet_name }}</h2>
+
+          <!-- HTML table view -->
+          <div class="table-wrapper">
+            {{ sheet_data.table_html | safe }}
+          </div>
+
+          <!-- Compact card view -->
+          <div class="cards-grid">
+            {% for row in sheet_data.rows %}
+              <div class="card">
+                {% for col in sheet_data.columns %}
+                  {% set val = row.get(col) %}
+                  {% if val %}
+                    <div class="card-row"><strong>{{ col }}:</strong> <span>{{ val }}</span></div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* small, self-contained styles for the books page */
+.container { max-width: 1100px; margin: 40px auto; padding: 0 16px; }
+.sheet-nav { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; list-style:none; padding:0; }
+.sheet-nav li a { background:#0ea5a1; color:white; padding:6px 10px; border-radius:6px; text-decoration:none; }
+.table-wrapper { overflow:auto; background:transparent; margin-bottom:16px; }
+.table { width:100%; border-collapse:collapse; }
+.table th, .table td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.03); color:#e6eef8; background: rgba(255,255,255,0.02); }
+.cards-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:16px; margin-top:18px; }
+.card { background: rgba(255,255,255,0.03); padding:12px; border-radius:12px; box-shadow: 0 6px 18px rgba(0,0,0,0.5); color:#fff; min-height:80px; }
+.card-row { margin-bottom:6px; font-size:14px; }
+.card-row strong { color:#ffd; }
+@media (max-width:700px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .sheet-nav { gap:6px; }
+  .table th, .table td { font-size:13px; padding:6px; }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Programs – Array Research{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero hero-programs">
+  <div class="container">
+    <h1 class="hero-title">Programs</h1>
+    <p class="hero-subtitle">Learn. Collaborate. Grow with Array Research</p>
+  </div>
+</section>
+
+<!-- SINGLE PROGRAM SECTION -->
+<section class="programs-section dark">
+  <div class="container program-box" data-aos="fade-up">
+
+    <div class="program-card glass">
+      <img src="{{ url_for('static', filename='images/program1.jpg') }}" alt="Research Mastery Program" class="program-img">
+
+      <div class="program-content">
+        <h2>Research Mastery: PhD Success Strategies</h2>
+        <p><b>Steps:</b> 15 Modules</p>
+
+        <h3>About</h3>
+        <p>
+          Join our comprehensive online course, <b>'Research Mastery: PhD Success Strategies'</b>,
+          designed for aspiring researchers and PhD candidates looking to refine their research skills.
+          This course offers an in-depth exploration of key aspects of research writing, including crafting
+          compelling theses, conducting thorough literature reviews, and producing high-quality research papers.
+        </p>
+        <p>
+          Participants will engage in practical exercises and receive invaluable insights from experienced professionals,
+          helping to demystify the research process. By the end of the course, you will possess enhanced writing techniques,
+          a clearer understanding of research methodologies, and the confidence to approach your own academic writing projects
+          with clarity and precision.
+        </p>
+        <p>
+          Whether you are just starting your research journey or looking to polish your writing skills, this course is tailored
+          to help you achieve success in your academic endeavors.
+        </p>
+
+        <div class="program-details">
+          <p><b>Instructor:</b> ArrayResearch Team</p>
+          <p><b>Price:</b> Free</p>
+        </div>
+
+        <div class="program-actions">
+          <a href="{{ url_for('login') }}" class="btn-glow btn-lg">Join Program</a>
+          <p class="note">You’ll need to sign in before joining this program.</p>
+        </div>
+
+        
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<section class="cta-section">
+  <div class="container center">
+    <p>We also have branches in Delhi, Chennai, Roorkee, Haridwar, and Kolkata.</p>
+  </div>
+</section>
+
+{% endblock %}

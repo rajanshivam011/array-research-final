@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Refer a Friend – Array Research{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero hero-refer">
+  <div class="container">
+    <h1 class="hero-title">Refer a Friend</h1>
+    <p class="hero-subtitle">Invite your friends to join Array Research and help them grow in their research journey.</p>
+  </div>
+</section>
+
+<!-- REFER SECTION -->
+<section class="refer-section dark">
+  <div class="container refer-box" data-aos="fade-up">
+
+    <div class="refer-card glass">
+      <h2>Want to Refer a Friend?</h2>
+      <p>
+        To access your referral dashboard and share your invite link, please log in to your Array Research account.
+        You’ll earn exciting rewards when your friends join and complete their first project!
+      </p>
+
+      <a href="{{ url_for('login') }}" class="btn-glow btn-lg">Login to Refer</a>
+
+      <div class="refer-note">
+        <p>Don’t have an account? <a href="{{ url_for('signup') }}">Sign Up here</a></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

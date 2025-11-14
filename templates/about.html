@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}About Us – Array Research{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero hero-about">
+  <div class="container">
+    <h1 class="hero-title">About Array Research</h1>
+    <p class="hero-subtitle">Empowering academic excellence through dedicated research support and mentorship</p>
+  </div>
+</section>
+
+<!-- Mission + Stats -->
+<section class="section">
+  <div class="container grid-2">
+    <div>
+      <h2 class="h2">Our Mission</h2>
+      <p class="text-muted">
+        At Array Research, we provide exceptional research assistance to students, researchers, and professionals.
+        Our services include Thesis Writing, Plagiarism Check & Removal, Literature Review Writing, and Research Paper Support.
+      </p>
+      <p class="text-muted">
+        With a team of experienced researchers and subject experts, we ensure every project meets the highest standards of
+        quality, integrity, and originality.
+      </p>
+      <p class="text-muted">
+        Our goal is to empower clients with the knowledge and resources needed to succeed in their academic and professional journeys.
+      </p>
+    </div>
+
+    <div class="stats-card">
+      <div class="stats-head">
+        <div class="stats-emoji">🎓</div>
+        <h3>Excellence in Research</h3>
+      </div>
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="count" data-target="1500">0</div>
+          <div class="label">PhD Scholars Mentored</div>
+        </div>
+        <div class="stat">
+          <div class="count" data-target="600">0</div>
+          <div class="label">Doctoral Completions</div>
+        </div>
+        <div class="stat">
+          <div class="count" data-target="10000">0</div>
+          <div class="label">Research Papers Published</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Achievements -->
+<section class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2">Our Achievements</h2>
+      <p class="text-muted">Recognition for excellence in academic support</p>
+    </div>
+
+    <div class="grid-3 achievements-grid">
+  <div class="achievement-card">
+    <img src="/static/images/achievements/trophy.jpg" alt="Trophy">
+    <h3>Educator of the Year 2025</h3>
+    <p>Honored by the Governor of Himachal Pradesh for outstanding contribution to academic excellence and innovation.</p>
+  </div>
+
+  <div class="achievement-card">
+    <img src="/static/images/achievements/rocket.jpg" alt="Rocket">
+    <h3>Startup Uttarakhand Grand Challenge</h3>
+    <p>Recognized for our innovative approach to academic support and contribution to the research startup ecosystem.</p>
+  </div>
+
+  <div class="achievement-card">
+    <img src="/static/images/achievements/star.jpg" alt="Star">
+    <h3>4 Years of Excellence</h3>
+    <p>Celebrating four years of empowering researchers and contributing to global academic advancement.</p>
+  </div>
+</div>
+
+  </div>
+</section>
+
+<!-- Values -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2">Our Values</h2>
+      <p class="text-muted">The principles that guide our work</p>
+    </div>
+
+    <div class="values-grid">
+      {% set values = [
+        {"icon": "✓", "title": "Quality", "desc": "Maintaining highest standards in every project"},
+        {"icon": "🤝", "title": "Integrity", "desc": "Ethical practices and complete transparency"},
+        {"icon": "🎯", "title": "Excellence", "desc": "Striving for perfection in research support"},
+        {"icon": "💡", "title": "Innovation", "desc": "Continuous improvement and modern approaches"}
+      ] %}
+      {% for v in values %}
+      <div class="value-card">
+        <div class="value-icon">{{ v.icon }}</div>
+        <h3>{{ v.title }}</h3>
+        <p class="text-muted">{{ v.desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="cta-animated">
+  <div class="cta-inner">
+    <h2 class="cta-title">Join Our Success Story</h2>
+    <p class="cta-subtitle">Become part of our growing community of successful researchers</p>
+    <a href="{{ url_for('contact') }}" class="cta-button">⚡ Get Started Today</a>
+  </div>
+</section>
+
+
+{% endblock %}

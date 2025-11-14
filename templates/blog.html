@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Blog — Array Research{% endblock %}
+
+{% block content %}
+<section class="hero hero-blog">
+  <div class="container">
+    <h1 class="hero-title">Our Blog</h1>
+    <p class="hero-subtitle">Latest insights, academic tips, and publishing guidance for scholars and researchers.</p>
+  </div>
+</section>
+
+<section class="blog-section dark">
+  <div class="container blog-grid" data-aos="fade-up">
+
+    {% for p in posts %}
+    <article class="blog-card glass" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+      <div class="blog-img-box">
+        <img src="{{ url_for('static', filename=p.image) }}" alt="{{ p.title }}" class="blog-img">
+      </div>
+      <div class="blog-content">
+        <div class="blog-meta">{{ p.date }} • {{ p.read_time }}</div>
+        <h3 class="blog-title">{{ p.title }}</h3>
+        <p class="blog-excerpt">{{ p.excerpt }}</p>
+        <a href="{{ url_for('blog_detail', post_id=p.id) }}" class="btn-blog">Read More →</a>
+      </div>
+    </article>
+    {% endfor %}
+
+  </div>
+</section>
+{% endblock %}

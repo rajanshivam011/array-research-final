@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block content %}
+
+<h2>📋 All Bookings</h2>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Service</th>
+        <th>Details</th>
+        <th>Timestamp</th>
+    </tr>
+    {% for row in bookings %}
+    <tr>
+        <td>{{ row.name }}</td>
+        <td>{{ row.email }}</td>
+        <td>{{ row.service }}</td>
+        <td>{{ row.details }}</td>
+        <td>{{ row.timestamp }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

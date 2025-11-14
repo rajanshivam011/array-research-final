@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Services – Array Research{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero hero-services">
+  <div class="container">
+    <h1 class="hero-title">Our Services</h1>
+    <p class="hero-subtitle">Comprehensive research support tailored to your academic needs</p>
+  </div>
+</section>
+
+<!-- SERVICE CARDS (GLASS UI) -->
+<section class="services-section dark">
+  <div class="container">
+    <div class="section-header">
+      <h2>Our Premium Services</h2>
+      <p>Choose from a wide range of academic and research assistance solutions</p>
+    </div>
+
+    <div class="services-grid">
+      {% for service in services %}
+      <div class="service-card glass">
+        <img src="{{ url_for('static', filename=service.image) }}" 
+     1    alt="{{ service.title }}" class="service-img">
+
+        <h3>{{ service.title }}</h3>
+        <p>{{ service.description }}</p>
+        <div class="service-price">{{ service.price }}</div>
+
+        <a href="/book/{{ service.title | lower | replace(' ', '-') }}" class="btn-service">Book Now</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- =========================
+     🧠 AUTHOR POSITIONS SECTION (Full Data)
+========================= -->
+<section class="section-alt-dark">
+  <h2 class="section-title center">Author Positions (Auto Loaded)</h2>
+<iframe src="/author-positions" style="width:100%;height:800px;border:none;"></iframe>
+
+</section>
+
+
+
+<!-- =========================
+     JOURNAL SECTION (Dynamic from Excel)
+========================= -->
+<section class="section dark">
+  <div class="container">
+    <h2 class="section-title" data-aos="fade-up">Indexed Journals</h2>
+    <p class="section-subtitle" data-aos="fade-up">
+      Explore verified, Scopus and Web of Science indexed journals extracted directly from Array Research’s master list.
+    </p>
+
+    {% if journals %}
+    <div class="journal-grid">
+      {% for journal in journals %}
+      <div class="journal-card glass" data-aos="fade-up" data-aos-delay="{{ loop.index * 80 }}">
+        <img src="{{ url_for('static', filename=journal.image) }}" alt="{{ journal.name }}" class="journal-img">
+        <h3>{{ journal.name }}</h3>
+        <p><strong>Publisher:</strong> {{ journal.publisher }}</p>
+        <p><strong>Index:</strong> {{ journal.index }}</p>
+        <p><strong>Domain:</strong> {{ journal.domain }}</p>
+        {% if journal.link != "#" %}
+  <a href="{{ journal.link }}" class="btn-service" target="_blank" rel="noopener noreferrer">Visit Journal</a>
+{% else %}
+  <button class="btn-service disabled" disabled title="Link not available">Link Unavailable</button>
+{% endif %}
+
+
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <p class="text-center" style="color:#bbb;">No journal data found. Please upload or verify the Excel file.</p>
+    {% endif %}
+  </div>
+</section>
+
+
+  
+
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-content">
+      <h2>Ready to Get Started?</h2>
+      <p>Contact us today to discuss your research needs</p>
+      <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">Request a Quote</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

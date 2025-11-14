@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Research Hackathon — Array Research{% endblock %}
+
+{% block content %}
+<section class="hero hero-event">
+  <div class="container text-center">
+    <h1 class="hero-title">2-Day International Research Hackathon</h1>
+    <p class="hero-subtitle">Organized by Array Research in Collaboration with Team Jinee</p>
+  </div>
+</section>
+
+<section class="event-section dark">
+  <div class="container event-container" data-aos="fade-up">
+
+    <!-- Event Poster -->
+    <div class="event-poster-box">
+      <img src="{{ url_for('static', filename='images/event-poster.png') }}" 
+           alt="Research Hackathon Poster" class="event-poster">
+    </div>
+
+    <!-- Event Details -->
+    <div class="event-details glass">
+      <h2>Announcing the 2-Day International Research Hackathon</h2>
+      <p class="highlight">
+        Organized by <strong>Array Research</strong> in collaboration with <strong>Team Jinee</strong>
+      </p>
+
+      <p>
+        We are thrilled to announce an exclusive <strong>2-Day Online Research Hackathon</strong> aimed at empowering 
+        international students, scholars, and early-career researchers with essential skills for 
+        academic writing and research paper publication.
+      </p>
+
+      <div class="event-info">
+        <p>📅 <strong>When:</strong> 14th June & 15th June, 2025</p>
+        <p>🕒 <strong>Time:</strong> From 7 PM IST</p>
+        <p>📍 <strong>Where:</strong> Online (Zoom Platform)</p>
+      </div>
+
+      <h3>💡 What You’ll Learn</h3>
+      <ul class="event-points">
+        <li>The fundamentals of research paper writing</li>
+        <li>How to check for plagiarism and AI-generated content</li>
+        <li>Proper use of referencing styles (APA, IEEE, etc.)</li>
+        <li>Access to top writing & citation tools</li>
+        <li>Step-by-step guided research paper creation</li>
+        <li>Live support to help you write your full paper in 2 days!</li>
+      </ul>
+
+      <p>
+        Whether you're working on your first paper or looking to improve your academic writing skills, 
+        this hackathon offers hands-on learning in a collaborative, supportive environment.
+      </p>
+
+      <h3>🎯 Who Should Attend</h3>
+      <ul class="event-points">
+        <li>PhD and Master’s students</li>
+        <li>Undergraduate research interns</li>
+        <li>Early-career scholars</li>
+        <li>Anyone passionate about academic research</li>
+      </ul>
+
+      <p class="final-text">
+        Let’s turn your research ideas into publication-ready papers — <strong>together!</strong>
+      </p>
+
+      <div class="text-center mt-4">
+        <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">Sign Up</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
