@@ -728,7 +728,8 @@ def login_google():
         client_secrets_file=client_secrets_file,
         scopes=["https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email", "openid"],
-        redirect_uri="http://127.0.0.1:5000/callback/google"
+        redirect_uri="https://array-research-final.onrender.com/callback/google"
+
     )
     authorization_url, state = flow.authorization_url(prompt="consent")
     session["state"] = state
@@ -740,7 +741,8 @@ def callback_google():
         client_secrets_file=client_secrets_file,
         scopes=["https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email", "openid"],
-        redirect_uri="http://127.0.0.1:5000/callback/google"
+        redirect_uri="https://array-research-final.onrender.com/callback/google"
+
     )
     flow.fetch_token(authorization_response=request.url)
     if session["state"] != request.args["state"]:
