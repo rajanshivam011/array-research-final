@@ -185,9 +185,9 @@ def extract_hyperlink(cell):
                 if p.startswith("http"):
                     return p.strip()
     return None
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def load_journals_from_excel():
-    excel_path = os.path.join("static", "uploads", "Array Research, Journals (4).xlsx")
+     excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
     if not os.path.exists(excel_path):
         return []
 
