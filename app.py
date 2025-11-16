@@ -95,40 +95,6 @@ FULL_SERVICES = [
 # JOURNAL SECTION DATA
 # =========================
 
-JOURNALS = [
-    {
-        "name": "International Journal of Advanced Research in Computer Science",
-        "publisher": "IJARCS",
-        "index": "Scopus Indexed",
-        "domain": "Computer Science",
-        "link": "https://ijarcs.info/",
-        "image": "images/journals/ijarcs.jpg"
-    },
-    {
-        "name": "IEEE Access",
-        "publisher": "IEEE",
-        "index": "Scopus, SCI",
-        "domain": "Engineering & Technology",
-        "link": "https://ieeeaccess.ieee.org/",
-        "image": "images/journals/ieee.jpg"
-    },
-    {
-        "name": "Elsevier Heliyon",
-        "publisher": "Elsevier",
-        "index": "Scopus, SCI",
-        "domain": "Multidisciplinary",
-        "link": "https://www.cell.com/heliyon",
-        "image": "images/journals/heliyon.jpg"
-    },
-    {
-        "name": "Springer Nature Computer Science",
-        "publisher": "Springer",
-        "index": "Scopus, ESCI",
-        "domain": "Computer Science",
-        "link": "https://www.springer.com/journal/42979",
-        "image": "images/journals/springer.jpg"
-    }
-]
 
 
 BLOG_POSTS = [
@@ -192,7 +158,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def load_journals_from_excel():
     excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
 
-    # Debug prints — will show in Render logs
     print("Excel Path:", excel_path)
     print("EXISTS? ->", os.path.exists(excel_path))
     try:
@@ -209,28 +174,26 @@ def load_journals_from_excel():
     for sheet_name, df in excel_data.items():
         for i, row in df.iterrows():
 
-            # Extract hyperlink
+            # hyperlink extract
             link = None
             for cell in row:
                 link = extract_hyperlink(cell)
                 if link:
                     break
 
-            # Extract name
+            # name extract
             name = None
             for cell in row:
-                if isinstance(cell, str) and not cell.startswith("http") and len(cell.strip()) > 5:
-                    name = cell.strip().split("\n")[0]
+                if isinstance(cell, str) and not cell.startswith("http") and len(cell.strip()) > 3:
+                    name = cell.strip()
                     break
 
             if not name:
-                name = "Unnamed Journal"
+                continue
 
             if link:
-                link = link.replace("\n", "").replace("\r", "").strip()
                 if not link.startswith(("http://", "https://")):
                     link = "https://" + link
-                link = quote(link, safe=':/?&=%')
             else:
                 link = "#"
 
