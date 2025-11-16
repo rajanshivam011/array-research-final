@@ -179,15 +179,19 @@ def extract_hyperlink(cell):
     if isinstance(cell, str):
         # Case: proper http link
         if "http" in cell:
-            # Clean newline and spaces
             parts = cell.split()
             for p in parts:
                 if p.startswith("http"):
                     return p.strip()
     return None
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 def load_journals_from_excel():
-     excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
+    excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
+
     if not os.path.exists(excel_path):
         return []
 
@@ -196,14 +200,15 @@ def load_journals_from_excel():
 
     for sheet_name, df in excel_data.items():
         for i, row in df.iterrows():
-            # Try extracting possible link from each row
+
+            # Extract hyperlink from row
             link = None
             for cell in row:
                 link = extract_hyperlink(cell)
                 if link:
                     break
 
-            # Extract visible name (usually after link)
+            # Extract journal name
             name = None
             for cell in row:
                 if isinstance(cell, str) and not cell.startswith("http") and len(cell.strip()) > 5:
@@ -213,7 +218,7 @@ def load_journals_from_excel():
             if not name:
                 name = "Unnamed Journal"
 
-            # Clean up link
+            # Clean hyperlink
             if link:
                 link = link.replace("\n", "").replace("\r", "").strip()
                 if not link.startswith(("http://", "https://")):
@@ -232,6 +237,8 @@ def load_journals_from_excel():
             })
 
     return journal_list
+# Load all journals dynamically
+JOURNALS = load_journals_from_excel()
 
 # Author
 
@@ -296,6 +303,8 @@ def load_author_positions_from_excel():
     return author_positions
 
 
+
+
 # Load at startup
 AUTHOR_POSITIONS = load_author_positions_from_excel()
 
@@ -303,8 +312,8 @@ AUTHOR_POSITIONS = load_author_positions_from_excel()
 
 
 
-# Load all journals dynamically
-JOURNALS = load_journals_from_excel()
+
+
 
 import pandas as pd
 
