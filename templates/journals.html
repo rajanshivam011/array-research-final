@@ -1,31 +1,87 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+    .journal-card {
+        background: #1a2234;
+        padding: 22px;
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(255,255,255,0.05);
+        transition: 0.2s;
+        text-align: center;
+        min-height: 350px;
+    }
+
+    .journal-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 15px rgba(255,255,255,0.12);
+    }
+
+    .journal-link {
+        font-size: 16px;
+        font-weight: 600;
+        color: #4aa3ff;
+        text-decoration: underline;
+        word-break: break-all;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .journal-card ul, 
+    .journal-card li {
+        list-style: none !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    .journal-card li {
+        margin-bottom: 6px;
+        font-size: 14px;
+        color: #d9d9d9;
+    }
+
+    .journal-price {
+        margin-top: 15px;
+        font-size: 16px;
+        color: #ffdd80;
+        font-weight: bold;
+    }
+
+    .sheet-title {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        margin-top: 30px;
+    }
+</style>
+
+
 <div class="container mt-5">
     {% for sheet, journals in journals_by_sheet.items() %}
-        <h2 class="text-primary mb-4">{{ sheet }}</h2>
+        
+        <h2 class="sheet-title text-primary">{{ sheet }}</h2>
 
-        <div class="row">
+        <div class="row g-4">
             {% for j in journals %}
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow p-3 h-100">
-                        
-                        <!-- LINK -->
-                        <h5>
-                            <a href="{{ j.link }}" target="_blank">{{ j.link }}</a>
-                        </h5>
+                <div class="col-md-4">
+                    <div class="journal-card">
+
+                        <!-- CLICKABLE LINK -->
+                        <a href="{{ j.link }}" target="_blank" class="journal-link">
+                            {{ j.link }}
+                        </a>
 
                         <hr>
 
                         <!-- DETAILS -->
-                        <ul style="font-size: 14px;">
+                        <ul>
                             {% for d in j.details %}
                                 <li>{{ d }}</li>
                             {% endfor %}
                         </ul>
 
                         <!-- PRICE -->
-                        <p class="mt-2"><strong>Price:</strong> {{ j.price }}</p>
+                        <p class="journal-price">Price: {{ j.price }}</p>
 
                     </div>
                 </div>
@@ -33,6 +89,7 @@
         </div>
 
         <hr class="my-5">
+
     {% endfor %}
 </div>
 

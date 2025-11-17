@@ -11,6 +11,43 @@
 
 <!-- Main Styles -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+<style>
+/* ---- Dropdown Styling ---- */
+.nav .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav .dropdown-content {
+  display: none;
+  position: absolute;
+  background: #111827;
+  padding: 10px 0;
+  border-radius: 6px;
+  min-width: 230px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  z-index: 2000;
+}
+
+.nav .dropdown-content a {
+  display: block;
+  padding: 10px 18px;
+  color: #ffffff;
+  font-size: 14px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.nav .dropdown-content a:hover {
+  background: #1f2937;
+}
+
+.nav .dropdown:hover .dropdown-content {
+  display: block;
+}
+</style>
+
 </head>
 
 <body>
@@ -23,7 +60,6 @@
       <span class="logo-text">Array Research</span>
     </a>
 
-
     <nav class="nav">
       <a href="{{ url_for('index') }}">Home</a>
       <a href="{{ url_for('about') }}">About</a>
@@ -31,10 +67,15 @@
       <a href="{{ url_for('programs') }}">Programs</a>
       <a href="{{ url_for('blog') }}">Blog</a>
       <a href="{{ url_for('event') }}">Event</a>
-      <a href="{{ url_for('authors_cards') }}">Authors</a>
-      <a href="{{ url_for('journals') }}">Journals</a>
 
-
+      <!-- ⭐ PREMIUM RESOURCES DROPDOWN ⭐ -->
+      <div class="dropdown">
+        <a href="#">Resources ▾</a>
+        <div class="dropdown-content">
+          <a href="{{ url_for('authors_cards') }}">Author Positions in Journals</a>
+          <a href="{{ url_for('journals') }}">Journal Publications</a>
+        </div>
+      </div>
 
       <a href="{{ url_for('contact') }}">Contact</a>
       <a href="{{ url_for('refer') }}">Refer Friends</a>
@@ -48,14 +89,13 @@
   </div>
 </header>
 
-<!-- 🔹 Content (no container wrapper so hero becomes full screen) -->
+<!-- 🔹 Content -->
 {% block content %}{% endblock %}
 
 <!-- 🔹 Footer -->
 <footer class="site-footer">
   <div class="container footer-inner">
     <p>© 2025 ArrayResearch India</p>
-
   </div>
 </footer>
 
