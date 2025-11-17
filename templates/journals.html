@@ -1,43 +1,22 @@
-{% extends 'base.html' %}
-{% block title %}Journals - Array Research{% endblock %}
+{% for sheet, journals in journals_by_sheet.items() %}
+    <h2 class="sheet-title">{{ sheet }}</h2>
 
-{% block content %}
-<section class="section" style="padding:60px 0;">
-  <div class="container">
-    <h1 class="section-title center">Journals</h1>
-    <p class="section-subtitle center">Indexed journals grouped by sheet (loaded from Excel)</p>
+    <div class="journals-grid">
+    {% for j in journals %}
+        <div class="journal-card">
 
-    {% for sheet, journals in journals_by_sheet.items() %}
-      <h2 style="margin-top:48px; color:#15a3ff;">{{ sheet }}</h2>
+            <a href="{{ j.link }}" class="journal-title" target="_blank">
+                {{ j.details[0] if j.details else "Journal" }}
+            </a>
 
-      <div class="journal-cards" style="display:flex;flex-wrap:wrap;gap:18px;margin-top:18px;">
-        {% if journals %}
-          {% for j in journals %}
-            <div class="card" style="width:360px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(0,0,0,0.35);">
-              <h3 style="font-size:18px;margin-bottom:8px;">
-                <a href="{{ j.link }}" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline;">
-                  {{ j.title }}
-                </a>
-              </h3>
-              <p style="margin:6px 0;color:#9fb0c8;"><strong>Publisher:</strong> {{ j.publisher }}</p>
-              <p style="margin:6px 0;color:#9fb0c8;"><strong>Subject:</strong> {{ j.subject }}</p>
-              <p style="margin:6px 0;color:#9fb0c8;"><strong>Acceptance:</strong> {{ j.acceptance }}</p>
-              <p style="margin:6px 0;font-weight:700;color:#ffd37a;"><strong>Price:</strong> {{ j.price }}</p>
+            <ul class="journal-details">
+                {% for d in j.details[1:] %}
+                    <li>{{ d }}</li>
+                {% endfor %}
+            </ul>
 
-              {% if j.extra_urls %}
-                <p style="font-size:13px;margin-top:8px;color:#9fb0c8;">Other links:
-                  {% for u in j.extra_urls %}
-                    <a href="{{ u }}" target="_blank" rel="noopener noreferrer" style="color:#7bd2ff;">link</a>{% if not loop.last %}, {% endif %}
-                  {% endfor %}
-                </p>
-              {% endif %}
-            </div>
-          {% endfor %}
-        {% else %}
-          <p style="color:#9fb0c8;">No journals found in this sheet.</p>
-        {% endif %}
-      </div>
+            <p class="price">Price: {{ j.price }}</p>
+        </div>
     {% endfor %}
-  </div>
-</section>
-{% endblock %}
+    </div>
+{% endfor %}
