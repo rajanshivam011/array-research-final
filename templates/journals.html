@@ -1,22 +1,39 @@
-{% for sheet, journals in journals_by_sheet.items() %}
-    <h2 class="sheet-title">{{ sheet }}</h2>
+{% extends "base.html" %}
+{% block content %}
 
-    <div class="journals-grid">
-    {% for j in journals %}
-        <div class="journal-card">
+<div class="container mt-5">
+    {% for sheet, journals in journals_by_sheet.items() %}
+        <h2 class="text-primary mb-4">{{ sheet }}</h2>
 
-            <a href="{{ j.link }}" class="journal-title" target="_blank">
-                {{ j.details[0] if j.details else "Journal" }}
-            </a>
+        <div class="row">
+            {% for j in journals %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow p-3 h-100">
+                        
+                        <!-- LINK -->
+                        <h5>
+                            <a href="{{ j.link }}" target="_blank">{{ j.link }}</a>
+                        </h5>
 
-            <ul class="journal-details">
-                {% for d in j.details[1:] %}
-                    <li>{{ d }}</li>
-                {% endfor %}
-            </ul>
+                        <hr>
 
-            <p class="price">Price: {{ j.price }}</p>
+                        <!-- DETAILS -->
+                        <ul style="font-size: 14px;">
+                            {% for d in j.details %}
+                                <li>{{ d }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- PRICE -->
+                        <p class="mt-2"><strong>Price:</strong> {{ j.price }}</p>
+
+                    </div>
+                </div>
+            {% endfor %}
         </div>
+
+        <hr class="my-5">
     {% endfor %}
-    </div>
-{% endfor %}
+</div>
+
+{% endblock %}
