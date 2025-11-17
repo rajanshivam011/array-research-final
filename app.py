@@ -458,13 +458,17 @@ def authors_cards():
 
 @app.route('/service')
 def services():
-    return render_template('service.html', services=FULL_SERVICES, journals=JOURNALS, author_positions=AUTHOR_POSITIONS)
+    return render_template('service.html')
+
+@app.route("/journals")
+def journals_page():
+    return render_template("journals.html")
 
 
 
-@app.route('/journals')
-def journals():
-    return render_template('service.html', services=FULL_SERVICES, journals=JOURNALS)
+#@app.route('/journals')
+#def journals():
+ #   return render_template('service.html', services=FULL_SERVICES, journals=JOURNALS)
 
 posts = [
     # 1

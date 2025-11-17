@@ -44,41 +44,8 @@
 
 
 
-<!-- =========================
-     JOURNAL SECTION (Dynamic from Excel)
-========================= -->
-<section class="section dark">
-  <div class="container">
-    <h2 class="section-title" data-aos="fade-up">Indexed Journals</h2>
-    <p class="section-subtitle" data-aos="fade-up">
-      Explore verified, Scopus and Web of Science indexed journals extracted directly from Array Research’s master list.
-    </p>
 
-    {% if journals %}
-    <div class="journal-grid">
-      {% for journal in journals %}
-      <div class="journal-card glass" data-aos="fade-up" data-aos-delay="{{ loop.index * 80 }}">
-        <img src="{{ url_for('static', filename=journal.image) }}" alt="{{ journal.name }}" class="journal-img">
-        <h3>{{ journal.name }}</h3>
-        <p><strong>Publisher:</strong> {{ journal.publisher }}</p>
-        <p><strong>Index:</strong> {{ journal.index }}</p>
-        <p><strong>Domain:</strong> {{ journal.domain }}</p>
-        {% if journal.link != "#" %}
-  <a href="{{ journal.link }}" class="btn-service" target="_blank" rel="noopener noreferrer">Visit Journal</a>
-{% else %}
-  <button class="btn-service disabled" disabled title="Link not available">Link Unavailable</button>
-{% endif %}
-
-
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-      <p class="text-center" style="color:#bbb;">No journal data found. Please upload or verify the Excel file.</p>
-    {% endif %}
-  </div>
-</section>
-
+   
 
   
 
