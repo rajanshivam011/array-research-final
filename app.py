@@ -155,68 +155,182 @@ def extract_hyperlink(cell):
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
+import re
+
+PRICE_RE = re.compile(r'(?i)(?:price[:\s]*)?[\d,.]+\s*[kKmM]?|[\d]+\s*(?:lakh|l|lakhs)?', re.IGNORECASE)
+URL_RE = re.compile(r'(https?://[^\s]+)', re.IGNORECASE)
+
+def extract_first_url_from_list(cells):
+    for c in cells:
+        if not isinstance(c, str):
+            continue
+        m = URL_RE.search(c)
+        if m:
+            return m.group(1).strip()
+    return None
+
+def is_price_like(text):
+    if not isinstance(text, str) or not text.strip():
+        return False
+    text = text.strip()
+    # If contains word 'price' or matches numeric patterns
+    if 'price' in text.lower():
+        return True
+    if PRICE_RE.search(text):
+        return True
+    # last resort: ends with K or k, or contains digits
+    if re.search(r'\d', text) and re.search(r'[kKmM]$', text):
+        return True
+    return False
+
+def clean_text(x):
+    if isinstance(x, str):
+        return x.strip()
+    return ''
+
+
 def load_journals_from_excel():
     excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
-
     if not os.path.exists(excel_path):
-        print("Journal Excel NOT FOUND", excel_path)
         return {}
 
-    excel_data = pd.read_excel(excel_path, sheet_name=None, header=None, engine="openpyxl")
+    # read every sheet as raw rows
+    excel_data = pd.read_excel(excel_path, sheet_name=None, header=None, engine='openpyxl')
 
-    all_sheets = {}
+    sheets_output = {}  # { sheet_name: [ journal_objects... ] }
 
     for sheet_name, df in excel_data.items():
-        df = df.fillna("")
+        rows = []
+        # convert each dataframe row to a list of cleaned cell strings
+        for _, r in df.iterrows():
+            row_cells = [clean_text(c) for c in r.tolist()]
+            # if entire row empty skip
+            if all(c == '' for c in row_cells):
+                rows.append(None)   # mark empty row
+            else:
+                rows.append(row_cells)
+
         journals = []
+        block = []  # accumulate rows (list of lists or strings)
+        for r in rows + [None]:   # append sentinel to flush last block
+            if r is None:
+                # flush block if has content
+                if block:
+                    # flatten block to list of strings
+                    flat = []
+                    for br in block:
+                        if isinstance(br, list):
+                            # join columns with ' | ' for fallback
+                            joined = " ".join([c for c in br if c])
+                            if joined.strip():
+                                flat.append(joined.strip())
+                        elif isinstance(br, str):
+                            if br.strip():
+                                flat.append(br.strip())
+                    # now detect price = last price_like string in flat (prefer last line)
+                    price = ''
+                    for item in reversed(flat):
+                        if is_price_like(item):
+                            price = item
+                            break
+                    # find first URL in whole block
+                    first_url = None
+                    extra_urls = []
+                    for br in block:
+                        if isinstance(br, list):
+                            for c in br:
+                                if isinstance(c, str):
+                                    m = URL_RE.search(c)
+                                    if m:
+                                        u = m.group(1).strip()
+                                        if not first_url:
+                                            first_url = u
+                                        else:
+                                            extra_urls.append(u)
+                        else:
+                            if isinstance(br, str):
+                                m = URL_RE.search(br)
+                                if m:
+                                    u = m.group(1).strip()
+                                    if not first_url:
+                                        first_url = u
+                                    else:
+                                        extra_urls.append(u)
+                    # find title: first long non-URL string after the first_url row
+                    title = ''
+                    seen_first_url_row = False
+                    for br in block:
+                        text_line = ''
+                        if isinstance(br, list):
+                            text_line = " ".join([c for c in br if c])
+                        else:
+                            text_line = br or ''
+                        if not text_line.strip():
+                            continue
+                        # check if this line contains first_url -> mark seen
+                        if first_url and first_url in text_line:
+                            seen_first_url_row = True
+                            continue
+                        # skip lines that are purely urls
+                        if URL_RE.search(text_line):
+                            # if title not set and we saw no link earlier, skip
+                            continue
+                        # candidate for title: if we have seen link already use first long text
+                        if seen_first_url_row:
+                            if len(text_line) > 3:
+                                title = text_line.strip()
+                                break
+                    # If still no title, fallback to first non-url long text
+                    if not title:
+                        for item in flat:
+                            if URL_RE.search(item):
+                                continue
+                            if len(item) > 3:
+                                title = item
+                                break
 
-        i = 0
-        while i < len(df):
-
-            # Journal entry always starts when a link (http) is found
-            if isinstance(df.iloc[i][0], str) and "http" in df.iloc[i][0]:
-
-                try:
-                    link = df.iloc[i][0].strip()
-                    name = df.iloc[i+1][0].strip()
-                    years = df.iloc[i+2][0].replace("Years currently covered by Scopus:", "").strip()
-                    publisher = df.iloc[i+3][0].replace("Publisher:", "").strip()
-                    issn = df.iloc[i+4][0].strip()
-                    scopus_link = df.iloc[i+5][0].strip()
-                    subject_area = df.iloc[i+6][0].replace("Subject area:", "").strip()
-                    subject = df.iloc[i+7][0].replace("Subject:", "").strip()
-                    acceptance = df.iloc[i+8][0].replace("Acceptance Time:", "").strip()
-                    pub_time = df.iloc[i+9][0].replace("Publication Time:", "").strip()
-                    price = df.iloc[i+10][0].replace("Price:", "").strip()
+                    # subject
+                    subject = ''
+                    acceptance = ''
+                    publisher = ''
+                    extra_info = []
+                    for item in flat:
+                        low = item.lower()
+                        if 'subject' in low:
+                            subject = item
+                            continue
+                        if 'accept' in low:
+                            acceptance = item
+                            continue
+                        if item.lower().startswith('publisher'):
+                            publisher = item
+                            continue
+                        # avoid duplicating link/price/title lines
+                        if item == title or (first_url and first_url in item) or item == price:
+                            continue
+                        extra_info.append(item)
 
                     journals.append({
-                        "name": name,
-                        "link": link,
-                        "years": years,
-                        "publisher": publisher,
-                        "issn": issn,
-                        "scopus_link": scopus_link,
-                        "subject_area": subject_area,
-                        "subject": subject,
-                        "acceptance": acceptance,
-                        "pub_time": pub_time,
-                        "price": price,
+                        "title": title or "Untitled Journal",
+                        "link": first_url or "#",
+                        "extra_urls": extra_urls,
+                        "publisher": publisher or "N/A",
+                        "subject": subject or "N/A",
+                        "acceptance": acceptance or "N/A",
+                        "price": price or "N/A",
+                        "raw": flat,
                     })
 
-                except Exception as e:
-                    print("Parse error:", e)
-
-                i += 12  # jump to next journal block
+                block = []
             else:
-                i += 1
+                block.append(r)
 
-        all_sheets[sheet_name] = journals
+        sheets_output[sheet_name] = journals
 
-    return all_sheets
+    return sheets_output
 
-
-JOURNAL_DATA = load_journals_from_excel()
-
+# load into global
+JOURNALS_BY_SHEET = load_journals_from_excel()
 
 
 # Author
@@ -466,9 +580,13 @@ def authors_cards():
 def services():
     return render_template('service.html')
 
-@app.route("/journals")
-def journals_page():
-    return render_template("journals.html", data=JOURNAL_DATA)
+@app.route('/journals')
+def journals():
+    # ensure fresh load on each request in dev if you want:
+    # global JOURNALS_BY_SHEET
+    # JOURNALS_BY_SHEET = load_journals_from_excel()
+    return render_template('journals.html', journals_by_sheet=JOURNALS_BY_SHEET)
+
 
 
 

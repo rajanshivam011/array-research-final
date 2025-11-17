@@ -1379,3 +1379,10 @@ body {
   margin-bottom: 15px;
 }
 
+.journal-cards .card a { color: #49c5ff; text-decoration: none; }
+.journal-cards .card a:hover { text-decoration: underline; }
+
+/* NAVBAR: keep it in single line by shrinking gaps on larger screens */
+.site-header .nav { display:flex; gap:18px; align-items:center; flex-wrap:nowrap; }
+.site-header .logo .logo-text { margin-left:10px; font-weight:700; color:#20b0ff; }
+

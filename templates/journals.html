@@ -1,58 +1,43 @@
 {% extends 'base.html' %}
-
 {% block title %}Journals - Array Research{% endblock %}
 
 {% block content %}
-<section class="section-dark" style="padding:60px;">
-    <h1 style="text-align:center; margin-bottom:30px;">Journals</h1>
+<section class="section" style="padding:60px 0;">
+  <div class="container">
+    <h1 class="section-title center">Journals</h1>
+    <p class="section-subtitle center">Indexed journals grouped by sheet (loaded from Excel)</p>
 
-    {% for sheet, journals in data.items() %}
-    <h2 style="margin-top:40px; color:#4FC3F7;">{{ sheet }}</h2>
+    {% for sheet, journals in journals_by_sheet.items() %}
+      <h2 style="margin-top:48px; color:#15a3ff;">{{ sheet }}</h2>
 
-    <div class="journal-grid">
+      <div class="journal-cards" style="display:flex;flex-wrap:wrap;gap:18px;margin-top:18px;">
+        {% if journals %}
+          {% for j in journals %}
+            <div class="card" style="width:360px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(0,0,0,0.35);">
+              <h3 style="font-size:18px;margin-bottom:8px;">
+                <a href="{{ j.link }}" target="_blank" rel="noopener noreferrer" style="color:#fff;text-decoration:underline;">
+                  {{ j.title }}
+                </a>
+              </h3>
+              <p style="margin:6px 0;color:#9fb0c8;"><strong>Publisher:</strong> {{ j.publisher }}</p>
+              <p style="margin:6px 0;color:#9fb0c8;"><strong>Subject:</strong> {{ j.subject }}</p>
+              <p style="margin:6px 0;color:#9fb0c8;"><strong>Acceptance:</strong> {{ j.acceptance }}</p>
+              <p style="margin:6px 0;font-weight:700;color:#ffd37a;"><strong>Price:</strong> {{ j.price }}</p>
 
-        {% for j in journals %}
-        <div class="journal-card glass">
-            <h3><a href="{{ j.link }}" target="_blank">{{ j.name }}</a></h3>
-
-            {% if j.years %}<p><strong>Years Covered:</strong> {{ j.years }}</p>{% endif %}
-            {% if j.publisher %}<p><strong>Publisher:</strong> {{ j.publisher }}</p>{% endif %}
-            {% if j.issn %}<p><strong>ISSN:</strong> {{ j.issn }}</p>{% endif %}
-            {% if j.scopus_link %}
-                <p><a href="{{ j.scopus_link }}" target="_blank">Scopus Source</a></p>
-            {% endif %}
-            {% if j.subject_area %}<p><strong>Subject Area:</strong> {{ j.subject_area }}</p>{% endif %}
-            {% if j.subject %}<p><strong>Subject:</strong> {{ j.subject }}</p>{% endif %}
-            {% if j.acceptance %}<p><strong>Acceptance Time:</strong> {{ j.acceptance }}</p>{% endif %}
-            {% if j.pub_time %}<p><strong>Publication Time:</strong> {{ j.pub_time }}</p>{% endif %}
-            {% if j.price %}<p><strong>Price:</strong> {{ j.price }}</p>{% endif %}
-
-        </div>
-        {% endfor %}
-
-    </div>
+              {% if j.extra_urls %}
+                <p style="font-size:13px;margin-top:8px;color:#9fb0c8;">Other links:
+                  {% for u in j.extra_urls %}
+                    <a href="{{ u }}" target="_blank" rel="noopener noreferrer" style="color:#7bd2ff;">link</a>{% if not loop.last %}, {% endif %}
+                  {% endfor %}
+                </p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="color:#9fb0c8;">No journals found in this sheet.</p>
+        {% endif %}
+      </div>
     {% endfor %}
+  </div>
 </section>
-
-<style>
-.journal-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.journal-card {
-    padding: 20px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    transition: 0.3s;
-}
-
-.journal-card:hover {
-    transform: scale(1.03);
-}
-</style>
-
 {% endblock %}
