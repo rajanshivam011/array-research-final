@@ -160,169 +160,155 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 import re
 
-PRICE_RE = re.compile(r'(?i)(?:price[:\s]*)?[\d,.]+\s*[kKmM]?|[\d]+\s*(?:lakh|l|lakhs)?', re.IGNORECASE)
-URL_RE = re.compile(r'(https?://[^\s]+)', re.IGNORECASE)
+import re
+import pandas as pd
+import os
 
-def extract_first_url_from_list(cells):
-    for c in cells:
-        if not isinstance(c, str):
-            continue
-        m = URL_RE.search(c)
-        if m:
-            return m.group(1).strip()
-    return None
+# regex helpers
+URL_RE = re.compile(r'(https?://[^\s)]+)', re.IGNORECASE)
+# price patterns: numbers with optional decimal, K/k/M/m or lakh/l/ L (some spreadsheets)
+PRICE_RE = re.compile(r'(?i)\b(?:price[:\s]*)?[\d\.,]+\s*[kKmM]?|[\d,]+\s*(?:lakh|lakhs|l|L)\b', re.IGNORECASE)
+
+def clean_text(x):
+    if pd.isna(x):
+        return ""
+    if isinstance(x, str):
+        return x.strip()
+    return str(x).strip()
 
 def is_price_like(text):
     if not isinstance(text, str) or not text.strip():
         return False
-    text = text.strip()
-    # If contains word 'price' or matches numeric patterns
     if 'price' in text.lower():
         return True
     if PRICE_RE.search(text):
         return True
-    # last resort: ends with K or k, or contains digits
+    # fallback: ends with K or k or contains digits and 'k' at end
     if re.search(r'\d', text) and re.search(r'[kKmM]$', text):
         return True
     return False
 
-def clean_text(x):
-    if isinstance(x, str):
-        return x.strip()
-    return ''
-
+def extract_urls_from_text(text):
+    if not isinstance(text, str):
+        return []
+    return [m.group(1).strip() for m in URL_RE.finditer(text)]
 
 def load_journals_from_excel():
+    """
+    Read journals.xlsx (all sheets). Returns dict:
+      { sheet_name: [ { title, link, extra_urls, publisher, subject, acceptance, price, raw }, ... ] }
+    """
     excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
     if not os.path.exists(excel_path):
         return {}
 
-    # read every sheet as raw rows
+    # Read all sheets (no header)
     excel_data = pd.read_excel(excel_path, sheet_name=None, header=None, engine='openpyxl')
 
-    sheets_output = {}  # { sheet_name: [ journal_objects... ] }
+    sheets_output = {}
 
     for sheet_name, df in excel_data.items():
+        # Convert df rows -> list of cleaned row-lists (or None for empty row)
         rows = []
-        # convert each dataframe row to a list of cleaned cell strings
         for _, r in df.iterrows():
-            row_cells = [clean_text(c) for c in r.tolist()]
-            # if entire row empty skip
-            if all(c == '' for c in row_cells):
-                rows.append(None)   # mark empty row
+            cells = [clean_text(c) for c in r.tolist()]
+            if all(not c for c in cells):
+                rows.append(None)
             else:
-                rows.append(row_cells)
+                rows.append(cells)
 
         journals = []
-        block = []  # accumulate rows (list of lists or strings)
-        for r in rows + [None]:   # append sentinel to flush last block
+        block = []  # accumulate non-empty rows for one journal
+        for r in rows + [None]:  # sentinel to flush final block
             if r is None:
-                # flush block if has content
-                if block:
-                    # flatten block to list of strings
-                    flat = []
-                    for br in block:
-                        if isinstance(br, list):
-                            # join columns with ' | ' for fallback
-                            joined = " ".join([c for c in br if c])
-                            if joined.strip():
-                                flat.append(joined.strip())
-                        elif isinstance(br, str):
-                            if br.strip():
-                                flat.append(br.strip())
-                    # now detect price = last price_like string in flat (prefer last line)
-                    price = ''
-                    for item in reversed(flat):
-                        if is_price_like(item):
-                            price = item
+                if not block:
+                    continue
+                # Flatten block lines to strings (join columns with space)
+                flat = []
+                for row_data in block:
+                    if isinstance(row_data, list):
+                        joined = " ".join([c for c in row_data if c])
+                        if joined.strip():
+                            flat.append(joined.strip())
+                    elif isinstance(row_data, str):
+                        if row_data.strip():
+                            flat.append(row_data.strip())
+
+                # find all urls in block (preserve order)
+                first_url = None
+                extra_urls = []
+                for line in flat:
+                    urls = extract_urls_from_text(line)
+                    for u in urls:
+                        if not first_url:
+                            first_url = u
+                        else:
+                            extra_urls.append(u)
+
+                # price: choose last price-like line in flat
+                price = ""
+                for item in reversed(flat):
+                    if is_price_like(item):
+                        price = item
+                        break
+
+                # Title detection (primary fix)
+                title = ""
+                if first_url:
+                    # find index of the line which contains first_url
+                    seen_first_url = False
+                    for line in flat:
+                        if first_url in line:
+                            seen_first_url = True
+                            continue
+                        # skip lines that are purely url-lines
+                        if URL_RE.search(line):
+                            continue
+                        if seen_first_url and len(line) > 3:
+                            title = line.strip()
                             break
-                    # find first URL in whole block
-                    first_url = None
-                    extra_urls = []
-                    for br in block:
-                        if isinstance(br, list):
-                            for c in br:
-                                if isinstance(c, str):
-                                    m = URL_RE.search(c)
-                                    if m:
-                                        u = m.group(1).strip()
-                                        if not first_url:
-                                            first_url = u
-                                        else:
-                                            extra_urls.append(u)
-                        else:
-                            if isinstance(br, str):
-                                m = URL_RE.search(br)
-                                if m:
-                                    u = m.group(1).strip()
-                                    if not first_url:
-                                        first_url = u
-                                    else:
-                                        extra_urls.append(u)
-                    # find title: first long non-URL string after the first_url row
-                    title = ''
-                    seen_first_url_row = False
-                    for br in block:
-                        text_line = ''
-                        if isinstance(br, list):
-                            text_line = " ".join([c for c in br if c])
-                        else:
-                            text_line = br or ''
-                        if not text_line.strip():
-                            continue
-                        # check if this line contains first_url -> mark seen
-                        if first_url and first_url in text_line:
-                            seen_first_url_row = True
-                            continue
-                        # skip lines that are purely urls
-                        if URL_RE.search(text_line):
-                            # if title not set and we saw no link earlier, skip
-                            continue
-                        # candidate for title: if we have seen link already use first long text
-                        if seen_first_url_row:
-                            if len(text_line) > 3:
-                                title = text_line.strip()
-                                break
-                    # If still no title, fallback to first non-url long text
-                    if not title:
-                        for item in flat:
-                            if URL_RE.search(item):
-                                continue
-                            if len(item) > 3:
-                                title = item
-                                break
+                # fallback: take second non-url long line if exists, otherwise first
+                if not title:
+                    non_url_lines = [line for line in flat if len(line) > 3 and not URL_RE.search(line)]
+                    if len(non_url_lines) >= 2:
+                        title = non_url_lines[1].strip()
+                    elif non_url_lines:
+                        title = non_url_lines[0].strip()
+                if not title:
+                    title = "Untitled Journal"
 
-                    # subject
-                    subject = ''
-                    acceptance = ''
-                    publisher = ''
-                    extra_info = []
-                    for item in flat:
-                        low = item.lower()
-                        if 'subject' in low:
-                            subject = item
-                            continue
-                        if 'accept' in low:
-                            acceptance = item
-                            continue
-                        if item.lower().startswith('publisher'):
-                            publisher = item
-                            continue
-                        # avoid duplicating link/price/title lines
-                        if item == title or (first_url and first_url in item) or item == price:
-                            continue
-                        extra_info.append(item)
+                # heuristics for subject / publisher / acceptance
+                subject = ""
+                publisher = ""
+                acceptance = ""
+                extra_info = []
+                for item in flat:
+                    low = item.lower()
+                    if 'subject' in low:
+                        subject = item
+                        continue
+                    if item.lower().startswith('publisher'):
+                        publisher = item
+                        continue
+                    if 'accept' in low or 'acceptance' in low:
+                        acceptance = item
+                        continue
+                    # avoid duplicating title/link/price
+                    if item == title or (first_url and first_url in item) or item == price:
+                        continue
+                    extra_info.append(item)
 
-                    journals.append({
-                        "title": title or "Untitled Journal",
-                        "link": first_url or "#",
-                        "extra_urls": extra_urls,
-                        "publisher": publisher or "N/A",
-                        "subject": subject or "N/A",
-                        "acceptance": acceptance or "N/A",
-                        "price": price or "N/A",
-                        "raw": flat,
-                    })
+                journals.append({
+                    "title": title,
+                    "link": first_url or "#",
+                    "extra_urls": extra_urls,
+                    "publisher": publisher or "N/A",
+                    "subject": subject or "N/A",
+                    "acceptance": acceptance or "N/A",
+                    "price": price or "N/A",
+                    "raw": flat,
+                    "extra_info": extra_info
+                })
 
                 block = []
             else:
@@ -331,6 +317,7 @@ def load_journals_from_excel():
         sheets_output[sheet_name] = journals
 
     return sheets_output
+
 
 # load into global
 JOURNALS_BY_SHEET = load_journals_from_excel()
