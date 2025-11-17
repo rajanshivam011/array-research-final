@@ -158,59 +158,65 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def load_journals_from_excel():
     excel_path = os.path.join(BASE_DIR, "static", "uploads", "journals.xlsx")
 
-    print("Excel Path:", excel_path)
-    print("EXISTS? ->", os.path.exists(excel_path))
-    try:
-        print("FILES IN UPLOADS:", os.listdir(os.path.join(BASE_DIR, "static", "uploads")))
-    except Exception as e:
-        print("ERROR LISTING UPLOADS:", e)
-
     if not os.path.exists(excel_path):
-        return []
+        print("Journal Excel NOT FOUND", excel_path)
+        return {}
 
-    excel_data = pd.read_excel(excel_path, sheet_name=None, header=None, engine='openpyxl')
+    excel_data = pd.read_excel(excel_path, sheet_name=None, header=None, engine="openpyxl")
 
-    journal_list = []
+    all_sheets = {}
 
     for sheet_name, df in excel_data.items():
-        for i, row in df.iterrows():
+        df = df.fillna("")
+        journals = []
 
-            # hyperlink extract
-            link = None
-            for cell in row:
-                link = extract_hyperlink(cell)
-                if link:
-                    break
+        i = 0
+        while i < len(df):
 
-            # name extract
-            name = None
-            for cell in row:
-                if isinstance(cell, str) and not cell.startswith("http") and len(cell.strip()) > 3:
-                    name = cell.strip()
-                    break
+            # Journal entry always starts when a link (http) is found
+            if isinstance(df.iloc[i][0], str) and "http" in df.iloc[i][0]:
 
-            if not name:
-                continue
+                try:
+                    link = df.iloc[i][0].strip()
+                    name = df.iloc[i+1][0].strip()
+                    years = df.iloc[i+2][0].replace("Years currently covered by Scopus:", "").strip()
+                    publisher = df.iloc[i+3][0].replace("Publisher:", "").strip()
+                    issn = df.iloc[i+4][0].strip()
+                    scopus_link = df.iloc[i+5][0].strip()
+                    subject_area = df.iloc[i+6][0].replace("Subject area:", "").strip()
+                    subject = df.iloc[i+7][0].replace("Subject:", "").strip()
+                    acceptance = df.iloc[i+8][0].replace("Acceptance Time:", "").strip()
+                    pub_time = df.iloc[i+9][0].replace("Publication Time:", "").strip()
+                    price = df.iloc[i+10][0].replace("Price:", "").strip()
 
-            if link:
-                if not link.startswith(("http://", "https://")):
-                    link = "https://" + link
+                    journals.append({
+                        "name": name,
+                        "link": link,
+                        "years": years,
+                        "publisher": publisher,
+                        "issn": issn,
+                        "scopus_link": scopus_link,
+                        "subject_area": subject_area,
+                        "subject": subject,
+                        "acceptance": acceptance,
+                        "pub_time": pub_time,
+                        "price": price,
+                    })
+
+                except Exception as e:
+                    print("Parse error:", e)
+
+                i += 12  # jump to next journal block
             else:
-                link = "#"
+                i += 1
 
-            journal_list.append({
-                "name": name[:120],
-                "publisher": "N/A",
-                "index": "N/A",
-                "domain": "Peer Reviewed",
-                "link": link,
-                "image": "images/journals/default.jpg"
-            })
+        all_sheets[sheet_name] = journals
 
-    return journal_list
+    return all_sheets
 
-# Load all journals dynamically
-JOURNALS = load_journals_from_excel()
+
+JOURNAL_DATA = load_journals_from_excel()
+
 
 
 # Author
@@ -462,7 +468,7 @@ def services():
 
 @app.route("/journals")
 def journals_page():
-    return render_template("journals.html")
+    return render_template("journals.html", data=JOURNAL_DATA)
 
 
 

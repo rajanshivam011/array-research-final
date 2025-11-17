@@ -3,19 +3,56 @@
 {% block title %}Journals - Array Research{% endblock %}
 
 {% block content %}
-<section class="section-dark" style="padding:80px 0; text-align:center;">
+<section class="section-dark" style="padding:60px;">
+    <h1 style="text-align:center; margin-bottom:30px;">Journals</h1>
 
-  <h1 style="font-size:36px; margin-bottom:20px;">Journals</h1>
-  <p style="font-size:18px; opacity:0.8;">
-    This page will display all journal-related information.<br>
-    Backend boss bolega tab yaha live data load hoga.
-  </p>
+    {% for sheet, journals in data.items() %}
+    <h2 style="margin-top:40px; color:#4FC3F7;">{{ sheet }}</h2>
 
-  <div style="margin-top:40px;">
-    <p style="font-size:16px; opacity:0.6;">
-      Temporary Placeholder • Content Coming Soon
-    </p>
-  </div>
+    <div class="journal-grid">
 
+        {% for j in journals %}
+        <div class="journal-card glass">
+            <h3><a href="{{ j.link }}" target="_blank">{{ j.name }}</a></h3>
+
+            {% if j.years %}<p><strong>Years Covered:</strong> {{ j.years }}</p>{% endif %}
+            {% if j.publisher %}<p><strong>Publisher:</strong> {{ j.publisher }}</p>{% endif %}
+            {% if j.issn %}<p><strong>ISSN:</strong> {{ j.issn }}</p>{% endif %}
+            {% if j.scopus_link %}
+                <p><a href="{{ j.scopus_link }}" target="_blank">Scopus Source</a></p>
+            {% endif %}
+            {% if j.subject_area %}<p><strong>Subject Area:</strong> {{ j.subject_area }}</p>{% endif %}
+            {% if j.subject %}<p><strong>Subject:</strong> {{ j.subject }}</p>{% endif %}
+            {% if j.acceptance %}<p><strong>Acceptance Time:</strong> {{ j.acceptance }}</p>{% endif %}
+            {% if j.pub_time %}<p><strong>Publication Time:</strong> {{ j.pub_time }}</p>{% endif %}
+            {% if j.price %}<p><strong>Price:</strong> {{ j.price }}</p>{% endif %}
+
+        </div>
+        {% endfor %}
+
+    </div>
+    {% endfor %}
 </section>
+
+<style>
+.journal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.journal-card {
+    padding: 20px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    transition: 0.3s;
+}
+
+.journal-card:hover {
+    transform: scale(1.03);
+}
+</style>
+
 {% endblock %}
