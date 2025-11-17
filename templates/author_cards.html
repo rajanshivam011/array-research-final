@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Author Positions – Array Research{% endblock %}
+
+{% block content %}
+<section class="section dark">
+  <div class="container">
+    <h1 class="section-title">Author Positions</h1>
+    <p class="section-subtitle">Loaded from Excel — each sheet and each author-table is shown as a card.</p>
+
+    {% for sheet in author_positions %}
+      <section style="margin-top:3rem;">
+        <h2 style="font-size:1.6rem;">{{ sheet.sheet }}</h2>
+
+        {% if sheet.info %}
+          <div class="sheet-info" style="margin-bottom:1rem; color:#cfcfcf;">
+            <pre style="white-space:pre-wrap; font-family: inherit;">{{ sheet.info }}</pre>
+          </div>
+        {% endif %}
+
+        <div class="card-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:1rem;">
+          {% for table in sheet.tables %}
+            <div class="card" style="background: rgba(255,255,255,0.03); padding:1rem; border-radius:10px; border:1px solid rgba(255,255,255,0.03);">
+              {% if table.title %}
+                <h3 style="margin-top:0;">{{ table.title }}</h3>
+              {% endif %}
+
+              <table style="width:100%; border-collapse: collapse; color:#ddd;">
+                <thead>
+                  <tr style="text-align:left;">
+                    <th style="padding:6px 8px; width:40%;">Author</th>
+                    <th style="padding:6px 8px; width:30%;">Amount</th>
+                    <th style="padding:6px 8px; width:30%;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for a in table.authors %}
+                    <tr>
+                      <td style="padding:6px 8px;">{{ a.level }}</td>
+                      <td style="padding:6px 8px;">{{ a.price }}</td>
+                      <td style="padding:6px 8px;">{{ a.status }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% else %}
+      <p>No author data found. Upload the Excel in static/uploads and redeploy.</p>
+    {% endfor %}
+
+  </div>
+</section>
+{% endblock %}
