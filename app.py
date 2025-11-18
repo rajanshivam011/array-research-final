@@ -477,7 +477,8 @@ def authors_cards():
 
 @app.route('/service')
 def services():
-    return render_template('service.html')
+    return render_template('service.html', services=services_list)
+
 
 @app.route('/journals')
 def journals():
