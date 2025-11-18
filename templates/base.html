@@ -10,106 +10,181 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 
 <style>
-/* --------- TOP NAVBAR --------- */
-.top-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #0d121c;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+/* ---------------- DESKTOP NAV (SCROLLABLE) ---------------- */
+@media (min-width: 768px){
+  .nav-scroll-wrapper {
+    position: relative;
+    flex: 1;
+    margin: 0 20px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .nav-scroll {
+    display: flex;
+    gap: 25px;
+    white-space: nowrap;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 3px;
+  }
+
+  .nav-scroll::-webkit-scrollbar { display: none; }
+
+  .nav-fade-left, .nav-fade-right {
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .nav-fade-left {
+    left: 0;
+    background: linear-gradient(to right, #0d121c, transparent);
+  }
+  .nav-fade-right {
+    right: 0;
+    background: linear-gradient(to left, #0d121c, transparent);
+  }
+
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 15;
+    color: #fff;
+  }
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.15);
+  }
+  .nav-left { left: -10px; }
+  .nav-right { right: -10px; }
+
+  .nav-scroll a {
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .nav-scroll a:hover { color: #4aa3ff; }
+
+  /* Hide mobile menu elements */
+  .mobile-menu-btn, .mobile-menu { display: none; }
 }
 
-.top-nav-menu a {
-  margin-right: 24px;
-  color: #fff;
-  font-size: 15px;
-  text-decoration: none;
-  font-weight: 500;
-}
-.top-nav-menu a:hover { color: #4aa3ff; }
+/* ---------------- MOBILE NAV (DRAWER MENU) ---------------- */
+@media (max-width: 767px){
 
-/* --------- HAMBURGER --------- */
-.hamburger {
-  font-size: 28px;
-  color: white;
-  cursor: pointer;
-  padding: 5px;
-  margin-left: 20px;
+  .nav-scroll-wrapper { display: none; } /* Hide scroll nav */
+
+  .mobile-menu-btn {
+    font-size: 28px;
+    cursor: pointer;
+    margin-left: 12px;
+  }
+
+  /* Drawer */
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -250px;
+    height: 100%;
+    width: 250px;
+    background: #111827;
+    padding: 20px;
+    transition: 0.35s ease-in-out;
+    z-index: 9999;
+  }
+
+  .mobile-menu.open {
+    right: 0;
+  }
+
+  .mobile-menu a {
+    display: block;
+    padding: 12px 0;
+    color: white;
+    font-size: 17px;
+    border-bottom: 1px solid #1f2937;
+    text-decoration: none;
+  }
+
+  .mobile-menu a:hover { color: #4aa3ff; }
+
+  /* Mobile top nav alignment */
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-auth {
+    display: flex;
+    gap: 8px;
+  }
+
 }
 
-/* --------- SIDE MENU --------- */
-.side-menu {
-  position: fixed;
-  top: 0;
-  right: -290px;
-  width: 290px;
-  height: 100%;
-  background: #111827;
-  padding: 25px;
-  transition: 0.3s ease;
-  box-shadow: -3px 0 10px rgba(0,0,0,0.4);
-  z-index: 5000;
-}
-
-.side-menu a {
-  display: block;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  font-size: 16px;
-  color: #fff;
-  text-decoration: none;
-}
-.side-menu a:hover { color: #4aa3ff; }
-
-/* Close button */
-.close-btn {
-  font-size: 28px;
-  color: white;
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  cursor: pointer;
-}
 </style>
 </head>
 
 <body>
 
-<!-- 🔹 TOP NAVBAR -->
-<header class="top-nav">
-  
-  <!-- Logo -->
-  <a class="logo" href="{{ url_for('index') }}">
-    <img src="{{ url_for('static', filename='images/logo.png') }}" class="nav-logo">
-    <span class="logo-text">Array Research</span>
-  </a>
+<header class="site-header">
+  <div class="container header-inner">
 
-  <!-- Main Navigation Items -->
-  <nav class="top-nav-menu">
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('services') }}">Services</a>
-    <a href="{{ url_for('authors_cards') }}">Author Positions</a>
-    <a href="{{ url_for('journals') }}">Journal Publications</a>
-  </nav>
+    <!-- LOGO -->
+    <a class="logo" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" class="nav-logo">
+      <span class="logo-text">Array Research</span>
+    </a>
 
-  <!-- Login Buttons -->
-  <div class="nav-auth">
-    <a href="{{ url_for('login') }}" class="btn-nav btn-outline-sm">Login</a>
-    <a href="{{ url_for('signup') }}" class="btn-nav btn-primary-sm">Sign Up</a>
+    <!-- DESKTOP SCROLL NAV -->
+    <div class="nav-scroll-wrapper">
+      <div class="nav-btn nav-left" onclick="scrollNav(-200)">&#10094;</div>
+      <div class="nav-btn nav-right" onclick="scrollNav(200)">&#10095;</div>
+
+      <div class="nav-fade-left"></div>
+      <div class="nav-fade-right"></div>
+
+      <nav class="nav-scroll" id="navScroll">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('services') }}">Services</a>
+        <a href="{{ url_for('authors_cards') }}">Author Positions</a>
+        <a href="{{ url_for('journals') }}">Journal Publications</a>
+        <a href="{{ url_for('programs') }}">Programs</a>
+        <a href="{{ url_for('blog') }}">Blog</a>
+        <a href="{{ url_for('event') }}">Event</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+        <a href="{{ url_for('refer') }}">Refer Friends</a>
+      </nav>
+    </div>
+
+    <!-- LOGIN / SIGNUP -->
+    <div class="nav-auth">
+      <a href="{{ url_for('login') }}" class="btn-nav btn-outline-sm">Login</a>
+      <a href="{{ url_for('signup') }}" class="btn-nav btn-primary-sm">Sign Up</a>
+    </div>
+
+    <!-- MOBILE MENU BUTTON -->
+    <div class="mobile-menu-btn" onclick="toggleMenu()">☰</div>
+
   </div>
-
-  <!-- Hamburger -->
-  <div class="hamburger" onclick="openMenu()">☰</div>
-
 </header>
 
-
-<!-- 🔹 SIDE DRAWER MENU -->
-<div id="sideMenu" class="side-menu">
-  <div class="close-btn" onclick="closeMenu()">✕</div>
-
-  <a href="{{ url_for('about') }}">About</a>
+<!-- MOBILE DRAWER MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="{{ url_for('index') }}">Home</a>
+  <a href="{{ url_for('services') }}">Services</a>
+  <a href="{{ url_for('authors_cards') }}">Author Positions</a>
+  <a href="{{ url_for('journals') }}">Journal Publications</a>
   <a href="{{ url_for('programs') }}">Programs</a>
   <a href="{{ url_for('blog') }}">Blog</a>
   <a href="{{ url_for('event') }}">Event</a>
@@ -119,14 +194,14 @@
 
 
 <script>
-function openMenu() {
-  document.getElementById("sideMenu").style.right = "0px";
+function scrollNav(amount) {
+  document.getElementById('navScroll').scrollBy({ left: amount, behavior: 'smooth' });
 }
-function closeMenu() {
-  document.getElementById("sideMenu").style.right = "-290px";
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
 }
 </script>
-
 
 {% block content %}{% endblock %}
 
@@ -136,9 +211,5 @@ function closeMenu() {
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
-<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-<script>AOS.init({ duration: 1100, once: true });</script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
