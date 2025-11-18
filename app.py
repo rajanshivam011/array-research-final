@@ -467,7 +467,7 @@ def load_author_positions_from_excel(filepath=None):
 
     return all_sheets
 
-
+s
 @app.route('/authors')
 def authors_cards():
     AUTHOR_POSITIONS = load_author_positions_from_excel()
@@ -477,7 +477,7 @@ def authors_cards():
 
 @app.route('/service')
 def services():
-    return render_template('service.html', services=services_list)
+    return render_template('service.html', services=SERVICES)
 
 
 @app.route('/journals')

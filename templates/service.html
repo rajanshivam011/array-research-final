@@ -4,7 +4,6 @@
 
 {% block content %}
 
-<!-- HERO SECTION -->
 <section class="hero hero-services">
   <div class="container">
     <h1 class="hero-title">Our Services</h1>
@@ -12,7 +11,6 @@
   </div>
 </section>
 
-<!-- SERVICE CARDS (GLASS UI) -->
 <section class="services-section dark">
   <div class="container">
     <div class="section-header">
@@ -21,36 +19,27 @@
     </div>
 
     <div class="services-grid">
+
       {% for service in services %}
       <div class="service-card glass">
-        <img src="{{ url_for('static', filename=service.image) }}" 
-     1    alt="{{ service.title }}" class="service-img">
+
+        <img src="{{ url_for('static', filename='images/services/' ~ service.image) }}"
+             alt="{{ service.title }}" class="service-img">
 
         <h3>{{ service.title }}</h3>
         <p>{{ service.description }}</p>
         <div class="service-price">{{ service.price }}</div>
 
-        <a href="/book/{{ service.title | lower | replace(' ', '-') }}" class="btn-service">Book Now</a>
+        <a href="{{ url_for('book_service', service_name=service.title|lower|replace(' ', '-')) }}"
+           class="btn-service">Book Now</a>
+
       </div>
       {% endfor %}
+
     </div>
   </div>
 </section>
 
-<!-- =========================
-     🧠 AUTHOR POSITIONS SECTION (Full Data)
-========================= -->
-
-
-
-
-
-   
-
-  
-
-
-<!-- CTA SECTION -->
 <section class="cta-section">
   <div class="container">
     <div class="cta-content">
