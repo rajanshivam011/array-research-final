@@ -81,15 +81,16 @@ SERVICES = [
 ]
 
 FULL_SERVICES = [
-    {'id': 1, 'title': 'PhD Thesis Writing', 'description': 'Complete thesis writing support from proposal to final submission', 'image': 'images/services/phd.jpg', 'price': 'Negotiable'},
-    {'id': 2, 'title': 'Research Paper Publication', 'description': 'Expert assistance in publishing papers in reputed journals', 'image': 'images/services/publication.jpg', 'price': 'Negotiable'},
-    {'id': 3, 'title': 'Literature Review', 'description': 'Comprehensive literature review and analysis', 'image': 'images/services/literature.png', 'price': 'Negotiable'},
-    {'id': 4, 'title': 'Plagiarism Check & Removal', 'description': 'Advanced plagiarism detection and content revision', 'image': 'images/services/plagiarism.jpg', 'price': 'Negotiable'},
-    {'id': 5, 'title': 'Data Analysis', 'description': 'Statistical analysis using SPSS, R, Python, and more', 'image': 'images/services/data.jpg', 'price': 'Negotiable'},
-    {'id': 6, 'title': 'Research Proposal', 'description': 'Well-structured research proposals for your projects', 'image': 'images/services/proposal.jpg', 'price': 'Negotiable'},
-    {'id': 7, 'title': 'Manuscript Editing', 'description': 'Professional editing and proofreading services', 'image': 'images/services/editing.jpg', 'price': 'Negotiable'},
-    {'id': 8, 'title': 'Synopsis Writing', 'description': 'Detailed synopsis preparation for research work', 'image': 'images/services/synopsis.jpg', 'price': 'Negotiable'}
+    {'id': 1, 'title': 'PhD Thesis Writing', 'description': 'Complete thesis writing support from proposal to final submission', 'image': 'phd.jpg', 'price': 'Negotiable'},
+    {'id': 2, 'title': 'Research Paper Publication', 'description': 'Expert assistance in publishing papers in reputed journals', 'image': 'publication.jpg', 'price': 'Negotiable'},
+    {'id': 3, 'title': 'Literature Review', 'description': 'Comprehensive literature review and analysis', 'image': 'literature.png', 'price': 'Negotiable'},
+    {'id': 4, 'title': 'Plagiarism Check & Removal', 'description': 'Advanced plagiarism detection and content revision', 'image': 'plagiarism.jpg', 'price': 'Negotiable'},
+    {'id': 5, 'title': 'Data Analysis', 'description': 'Statistical analysis using SPSS, R, Python, and more', 'image': 'data.jpg', 'price': 'Negotiable'},
+    {'id': 6, 'title': 'Research Proposal', 'description': 'Well-structured research proposals for your projects', 'image': 'proposal.jpg', 'price': 'Negotiable'},
+    {'id': 7, 'title': 'Manuscript Editing', 'description': 'Professional editing and proofreading services', 'image': 'editing.jpg', 'price': 'Negotiable'},
+    {'id': 8, 'title': 'Synopsis Writing', 'description': 'Detailed synopsis preparation for research work', 'image': 'synopsis.jpg', 'price': 'Negotiable'}
 ]
+
 
 # =========================
 # JOURNAL SECTION DATA
@@ -467,7 +468,7 @@ def load_author_positions_from_excel(filepath=None):
 
     return all_sheets
 
-s
+
 @app.route('/authors')
 def authors_cards():
     AUTHOR_POSITIONS = load_author_positions_from_excel()
