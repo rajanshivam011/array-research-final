@@ -10,123 +10,123 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 
 <style>
-/* ----- Scrollable Navbar Styling ----- */
-.nav-scroll-wrapper {
-  position: relative;
-  flex: 1;
-  margin: 0 20px;
-  overflow: hidden;
-}
-
-.nav-scroll {
+/* --------- TOP NAVBAR --------- */
+.top-nav {
   display: flex;
-  gap: 25px;
-  white-space: nowrap;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding-bottom: 3px;
+  align-items: center;
+  justify-content: space-between;
+  background: #0d121c;
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.nav-scroll::-webkit-scrollbar { display: none; }
-
-/* Fade edges */
-.nav-fade-left, .nav-fade-right {
-  position: absolute;
-  top: 0;
-  width: 40px;
-  height: 100%;
-  pointer-events: none;
-  z-index: 10;
-}
-.nav-fade-left {
-  left: 0;
-  background: linear-gradient(to right, #0d121c, transparent);
-}
-.nav-fade-right {
-  right: 0;
-  background: linear-gradient(to left, #0d121c, transparent);
-}
-
-/* Scroll buttons */
-.nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.25);
-  backdrop-filter: blur(4px);
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  z-index: 15;
+.top-nav-menu a {
+  margin-right: 24px;
   color: #fff;
-}
-.nav-btn:hover {
-  background: rgba(255,255,255,0.15);
-}
-.nav-left { left: -10px; }
-.nav-right { right: -10px; }
-
-.nav-scroll a {
-  color: white;
   font-size: 15px;
+  text-decoration: none;
   font-weight: 500;
+}
+.top-nav-menu a:hover { color: #4aa3ff; }
+
+/* --------- HAMBURGER --------- */
+.hamburger {
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 20px;
+}
+
+/* --------- SIDE MENU --------- */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -290px;
+  width: 290px;
+  height: 100%;
+  background: #111827;
+  padding: 25px;
+  transition: 0.3s ease;
+  box-shadow: -3px 0 10px rgba(0,0,0,0.4);
+  z-index: 5000;
+}
+
+.side-menu a {
+  display: block;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 16px;
+  color: #fff;
   text-decoration: none;
 }
-.nav-scroll a:hover { color: #4aa3ff; }
-</style>
+.side-menu a:hover { color: #4aa3ff; }
 
+/* Close button */
+.close-btn {
+  font-size: 28px;
+  color: white;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  cursor: pointer;
+}
+</style>
 </head>
 
 <body>
 
-<header class="site-header">
-  <div class="container header-inner">
+<!-- 🔹 TOP NAVBAR -->
+<header class="top-nav">
+  
+  <!-- Logo -->
+  <a class="logo" href="{{ url_for('index') }}">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" class="nav-logo">
+    <span class="logo-text">Array Research</span>
+  </a>
 
-    <!-- Logo -->
-    <a class="logo" href="{{ url_for('index') }}">
-      <img src="{{ url_for('static', filename='images/logo.png') }}" class="nav-logo">
-      <span class="logo-text">Array Research</span>
-    </a>
+  <!-- Main Navigation Items -->
+  <nav class="top-nav-menu">
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('services') }}">Services</a>
+    <a href="{{ url_for('authors_cards') }}">Author Positions</a>
+    <a href="{{ url_for('journals') }}">Journal Publications</a>
+  </nav>
 
-    <!-- Scrollable Navbar -->
-    <div class="nav-scroll-wrapper">
-
-      <div class="nav-btn nav-left" onclick="scrollNav(-200)">&#10094;</div>
-      <div class="nav-btn nav-right" onclick="scrollNav(200)">&#10095;</div>
-
-      <div class="nav-fade-left"></div>
-      <div class="nav-fade-right"></div>
-
-      <nav class="nav-scroll" id="navScroll">
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('about') }}">About</a>
-        <a href="{{ url_for('services') }}">Services</a>
-        <a href="{{ url_for('authors_cards') }}">Author Positions</a>
-        <a href="{{ url_for('journals') }}">Journal Publications</a>
-        <a href="{{ url_for('programs') }}">Programs</a>
-        <a href="{{ url_for('blog') }}">Blog</a>
-        <a href="{{ url_for('event') }}">Event</a>
-        <a href="{{ url_for('contact') }}">Contact</a>
-        <a href="{{ url_for('refer') }}">Refer Friends</a>
-      </nav>
-
-    </div>
-
-    <!-- Login Buttons -->
-    <div class="nav-auth">
-      <a href="{{ url_for('login') }}" class="btn-nav btn-outline-sm">Login</a>
-      <a href="{{ url_for('signup') }}" class="btn-nav btn-primary-sm">Sign Up</a>
-    </div>
-
+  <!-- Login Buttons -->
+  <div class="nav-auth">
+    <a href="{{ url_for('login') }}" class="btn-nav btn-outline-sm">Login</a>
+    <a href="{{ url_for('signup') }}" class="btn-nav btn-primary-sm">Sign Up</a>
   </div>
+
+  <!-- Hamburger -->
+  <div class="hamburger" onclick="openMenu()">☰</div>
+
 </header>
 
+
+<!-- 🔹 SIDE DRAWER MENU -->
+<div id="sideMenu" class="side-menu">
+  <div class="close-btn" onclick="closeMenu()">✕</div>
+
+  <a href="{{ url_for('about') }}">About</a>
+  <a href="{{ url_for('programs') }}">Programs</a>
+  <a href="{{ url_for('blog') }}">Blog</a>
+  <a href="{{ url_for('event') }}">Event</a>
+  <a href="{{ url_for('contact') }}">Contact</a>
+  <a href="{{ url_for('refer') }}">Refer Friends</a>
+</div>
+
+
 <script>
-function scrollNav(amount) {
-  document.getElementById('navScroll').scrollBy({ left: amount, behavior: 'smooth' });
+function openMenu() {
+  document.getElementById("sideMenu").style.right = "0px";
+}
+function closeMenu() {
+  document.getElementById("sideMenu").style.right = "-290px";
 }
 </script>
+
 
 {% block content %}{% endblock %}
 
