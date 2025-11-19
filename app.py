@@ -241,21 +241,16 @@ import pandas as pd
 import os
 
 def parse_author_cell(cell):
-    """Split '12k Booked' → price + status."""
     if not isinstance(cell, str):
         return {"price": "", "status": ""}
     parts = cell.strip().split()
     if len(parts) == 0:
         return {"price": "", "status": ""}
-    price = parts[0]
-    status = " ".join(parts[1:]) if len(parts) > 1 else ""
-    return {"price": price, "status": status}
+    return {"price": parts[0], "status": " ".join(parts[1:])}
 
 
 def load_author_positions_from_excel(filepath=None):
-    """
-    Extract tables from Excel with automatic title detection.
-    """
+
     if filepath is None:
         filepath = os.path.join("static", "uploads", "Array Research Author Positions (2).xlsx")
 
@@ -276,176 +271,135 @@ def load_author_positions_from_excel(filepath=None):
         df = df.fillna("")
         nrows, ncols = df.shape
 
-        sheet_info_lines = []
+        sheet_info = []
         tables = []
-        in_table = False
         current_table = None
+        in_table = False
 
         for r in range(nrows):
             row = [str(x).strip() for x in df.iloc[r].tolist()]
             lower_row = [c.lower() for c in row]
 
-            # Detection: table header row
+            # TRUE header row
             is_header = (
-                any("position" in c for c in lower_row) and 
-                any(("amount" in c or "price" in c) for c in lower_row) and 
-                any("status" in c for c in lower_row)
+                any("position" in c for c in lower_row)
+                and any(("amount" in c or "price" in c) for c in lower_row)
+                and any("status" in c for c in lower_row)
             )
 
-            # Detection: explicit table title row
-            is_table_title = any(
-                "author position" in c.lower() or "author position available" in c.lower()
-                for c in row if c
+            # AVOID repeating "author position available"
+            is_fake_title = any(
+                "author position" in c.lower() for c in row if c
             )
 
-            # Detect if any author-like row
+            # Author line?
             has_author_label = any(author_label_re.match(c) for c in row if c)
 
-            # ─────────────────────────────────────────────
-            # CASE: NOT inside a table → treat as sheet info
-            # ─────────────────────────────────────────────
-            if not in_table and not is_header and not is_table_title and not has_author_label:
-                text_cells = [c for c in row if c and len(c) > 3]
-                if text_cells:
-                    sheet_info_lines.append(" | ".join(text_cells))
+            # ----------------------
+            # SHEET INFO (before tables)
+            # ----------------------
+            if not in_table and not is_header and not has_author_label:
+                # Skip fake titles from sheet info too
+                if not is_fake_title:
+                    text = " ".join([c for c in row if c])
+                    if len(text.strip()) > 3:
+                        sheet_info.append(text.strip())
                 continue
 
-            # ─────────────────────────────────────────────
-            # TABLE START → either title row OR header row
-            # ─────────────────────────────────────────────
-            if is_table_title or is_header:
+            # ----------------------
+            # TABLE START
+            # ----------------------
+            if is_header:
 
-                # Save previous table if exists
+                # Push previous table
                 if current_table:
                     tables.append(current_table)
 
-                # Extract TITLE from row ABOVE
+                # FIND REAL HEADING ABOVE HEADER
                 heading = ""
-                if r > 0:
-                    for up in range(r - 1, -1, -1):
-                        prev_row = [str(x).strip() for x in df.iloc[up].tolist()]
-                        text_cells = [c for c in prev_row if c and len(c) > 3]
-                        if text_cells:
-                            heading = " ".join(text_cells)
-                            break
+                for up in range(r - 1, -1, -1):
+                    prev = [str(x).strip() for x in df.iloc[up].tolist()]
+                    line = " ".join([c for c in prev if c])
 
-                # Create new table
+                    if len(line) > 3 and not ("author position" in line.lower()):
+                        heading = line
+                        break
+
                 current_table = {"title": heading, "authors": []}
                 in_table = True
 
-                # For header rows → store column indices
-                if is_header:
-                    author_col = None
-                    amount_col = None
-                    status_col = None
+                # find column indexes
+                author_col = next((i for i, c in enumerate(lower_row) if "position" in c or "author" in c), 0)
+                amount_col = next((i for i, c in enumerate(lower_row) if "amount" in c or "price" in c), 1)
+                status_col = next((i for i, c in enumerate(lower_row) if "status" in c), 2)
 
-                    for ci, cell in enumerate(lower_row):
-                        if "position" in cell or "author" in cell:
-                            author_col = ci
-                        if "amount" in cell or "price" in cell:
-                            amount_col = ci
-                        if "status" in cell:
-                            status_col = ci
-
-                    author_col = author_col if author_col is not None else 0
-                    amount_col = amount_col if amount_col is not None else min(2, ncols - 1)
-                    status_col = status_col if status_col is not None else min(3, ncols - 1)
-
-                    current_table["_cols"] = {
-                        "author": author_col,
-                        "amount": amount_col,
-                        "status": status_col
-                    }
-
+                current_table["_cols"] = {
+                    "author": author_col,
+                    "amount": amount_col,
+                    "status": status_col
+                }
                 continue
 
-            # ─────────────────────────────────────────────
-            # INSIDE TABLE → read author rows
-            # ─────────────────────────────────────────────
+            # ----------------------
+            # DATA ROWS
+            # ----------------------
             if in_table:
-
-                # Blank row → table end
+                # blank row ends table
                 if all(not c for c in row):
-                    if current_table and current_table.get("authors"):
+                    if current_table and current_table["authors"]:
                         tables.append(current_table)
                     current_table = None
                     in_table = False
                     continue
 
-                # If columns known from header
-                if current_table and "_cols" in current_table:
-                    cols = current_table["_cols"]
-                    ai = cols["author"]
-                    bi = cols["amount"]
-                    ci = cols["status"]
+                cols = current_table["_cols"]
+                ai, bi, ci = cols["author"], cols["amount"], cols["status"]
 
-                    ai = ai if ai < ncols else 0
-                    bi = bi if bi < ncols else ai
-                    ci = ci if ci < ncols else bi
+                author_cell = row[ai]
+                amount_cell = row[bi] if bi < len(row) else ""
+                status_cell = row[ci] if ci < len(row) else ""
 
-                    author_cell = row[ai]
-                    amount_cell = row[bi]
-                    status_cell = row[ci]
+                # fix missing author
+                if not author_cell:
+                    for c in row:
+                        if c.lower().startswith("author"):
+                            author_cell = c
+                            break
 
-                    # If author missing → search in row
-                    if not author_cell:
-                        for cell in row:
-                            if cell.lower().startswith("author"):
-                                author_cell = cell
-                                break
-
-                    # Skip row if still not author
-                    if not author_cell or not re.search(r'Author', author_cell, re.I):
-                        continue
-
-                    # Normalize author label
-                    level = re.sub(r'[:\-]', '', author_cell).strip()
-                    if not re.search(r'Author', level, re.I):
-                        m = re.search(r'(\d+)', level)
-                        if m:
-                            level = f"Author {m.group(1)}"
-
-                    parsed = parse_author_cell(
-                        status_cell if not amount_cell else f"{amount_cell} {status_cell}"
-                    )
-
-                    price = amount_cell if amount_cell else parsed["price"]
-                    status = status_cell if status_cell else parsed["status"]
-
-                    current_table["authors"].append({
-                        "level": level,
-                        "price": str(price).strip(),
-                        "status": str(status).strip()
-                    })
+                if not author_cell or not re.search(r"Author", author_cell, re.I):
                     continue
 
-                # Fallback: row contains Author but no header detected
-                if any(re.search(r'Author', c, re.I) for c in row):
-                    nonempty = [c for c in row if c]
-                    author_cell = nonempty[0]
-                    price = nonempty[1] if len(nonempty) > 2 else ""
-                    status = nonempty[-1] if len(nonempty) > 1 else ""
+                # clean author label
+                level = re.sub(r'[:\-]', '', author_cell).strip()
+                if not re.search(r'Author', level, re.I):
+                    m = re.search(r'(\d+)', level)
+                    if m:
+                        level = f"Author {m.group(1)}"
 
-                    current_table["authors"].append({
-                        "level": author_cell,
-                        "price": str(price).strip(),
-                        "status": str(status).strip(),
-                    })
-                    continue
+                parsed = parse_author_cell(
+                    status_cell if not amount_cell else f"{amount_cell} {status_cell}"
+                )
 
-        # Final flush
-        if current_table and current_table.get("authors"):
+                price = amount_cell or parsed["price"]
+                status = status_cell or parsed["status"]
+
+                current_table["authors"].append({
+                    "level": level,
+                    "price": price.strip(),
+                    "status": status.strip()
+                })
+
+        if current_table and current_table["authors"]:
             tables.append(current_table)
-
-        info = "\n".join(dict.fromkeys([s.strip() for s in sheet_info_lines if s.strip()]))
 
         all_sheets.append({
             "sheet": sheet_name,
-            "info": info,
+            "info": "\n".join(sheet_info),
             "tables": [{k: v for k, v in t.items() if k != "_cols"} for t in tables]
         })
 
     return all_sheets
+
 
 
 @app.route('/authors')
