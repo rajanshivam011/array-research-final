@@ -15,10 +15,49 @@
             <h4>Admin Panel</h4>
             <hr>
             <ul class="nav flex-column">
-                <li class="nav-item"><a href="{{ url_for('admin_dashboard') }}" class="nav-link text-white">🏠 Dashboard</a></li>
-                <li class="nav-item"><a href="{{ url_for('admin_journals') }}" class="nav-link text-white">📄 Manage Journals</a></li>
-                <li class="nav-item"><a href="#" class="nav-link text-white">👥 Users</a></li>
-                <li class="nav-item"><a href="#" class="nav-link text-white">⚙️ Settings</a></li>
+
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a href="{{ url_for('admin_dashboard') }}" class="nav-link text-white">
+                        🏠 Dashboard
+                    </a>
+                </li>
+
+                <!-- Manage Journals (Already Available) -->
+                <li class="nav-item">
+                    <a href="{{ url_for('admin_journals') }}" class="nav-link text-white">
+                        📄 Manage Journals
+                    </a>
+                </li>
+
+                <!-- NEW: Manage Author Positions -->
+                <li class="nav-item">
+                    <a href="{{ url_for('admin_author_positions') }}" class="nav-link text-white">
+                        📝 Manage Author Positions
+                    </a>
+                </li>
+
+                <!-- NEW: Excel Manager -->
+                <li class="nav-item">
+                    <a href="{{ url_for('admin_excel_manager') }}" class="nav-link text-white">
+                        📑 Excel Uploads
+                    </a>
+                </li>
+
+                <!-- Users -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white">
+                        👥 Users
+                    </a>
+                </li>
+
+                <!-- Settings -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white">
+                        ⚙️ Settings
+                    </a>
+                </li>
+
             </ul>
         </div>
 

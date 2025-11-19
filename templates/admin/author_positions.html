@@ -1,0 +1,44 @@
+{% extends 'admin/base.html' %}
+{% block title %}Author Positions{% endblock %}
+
+{% block content %}
+<h2>Author Positions (Excel Parsed)</h2>
+<hr>
+
+{% for sheet in data %}
+    <h4>{{ sheet.sheet }}</h4>
+
+    {% if sheet.info %}
+        <div class="alert alert-info">{{ sheet.info }}</div>
+    {% endif %}
+
+    {% for table in sheet.tables %}
+        <div class="card my-3">
+            <div class="card-header fw-bold">
+                {{ table.title }}
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in table.authors %}
+                        <tr>
+                            <td>{{ a.level }}</td>
+                            <td>{{ a.price }}</td>
+                            <td>{{ a.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endfor %}
+{% endblock %}
