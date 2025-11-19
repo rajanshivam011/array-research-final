@@ -860,17 +860,7 @@ def callback_google():
     flash(f"Welcome {id_info['name']}!", "success")
     return redirect(url_for("index"))
 
-@app.route('/admin/excel-manager', methods=['GET', 'POST'])
-@admin_required
-def admin_excel_manager():
-    message = ""
-    if request.method == "POST":
-        file = request.files.get("file")
-        if file:
-            save_path = os.path.join("static", "uploads", "Array Research Author Positions (2).xlsx")
-            file.save(save_path)
-            message = "Excel updated successfully!"
-    return render_template('admin/excel_manager.html', message=message)
+
 
 # --------------------------------------------------------
 # ADMIN ROUTES
@@ -885,6 +875,20 @@ def admin_required(func):
         return func(*args, **kwargs)
     wrapper.__name__ = func.__name__
     return wrapper
+
+@app.route('/admin/excel-manager', methods=['GET', 'POST'])
+@admin_required
+def admin_excel_manager():
+    message = ""
+    if request.method == "POST":
+        file = request.files.get("file")
+        if file:
+            save_path = os.path.join("static", "uploads", "Array Research Author Positions (2).xlsx")
+            file.save(save_path)
+            message = "Excel updated successfully!"
+    return render_template('admin/excel_manager.html', message=message)
+
+
 
 @app.route('/admin/author-positions')
 @admin_required
