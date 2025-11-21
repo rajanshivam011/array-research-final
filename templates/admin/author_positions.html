@@ -1,44 +1,40 @@
-{% extends 'admin/base.html' %}
-{% block title %}Author Positions{% endblock %}
-
+{% extends "admin/base.html" %}
 {% block content %}
-<h2>Author Positions (Excel Parsed)</h2>
-<hr>
 
-{% for sheet in data %}
-    <h4>{{ sheet.sheet }}</h4>
+<h2>Author Positions</h2>
 
-    {% if sheet.info %}
-        <div class="alert alert-info">{{ sheet.info }}</div>
-    {% endif %}
+<!-- Add Row Form -->
+<form method="POST" action="/admin/author_positions/add" class="mb-3">
+    <input name="journal_name" placeholder="Journal Name" required>
+    <input name="author_name" placeholder="Author Name" required>
+    <input name="position" placeholder="Position" required>
+    <input name="price" placeholder="Price" required>
+    <button type="submit">Add</button>
+</form>
 
-    {% for table in sheet.tables %}
-        <div class="card my-3">
-            <div class="card-header fw-bold">
-                {{ table.title }}
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Author</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for a in table.authors %}
-                        <tr>
-                            <td>{{ a.level }}</td>
-                            <td>{{ a.price }}</td>
-                            <td>{{ a.status }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<table border="1" width="100%">
+    <tr>
+        <th>Journal</th>
+        <th>Author</th>
+        <th>Position</th>
+        <th>Price</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <form method="POST" action="/admin/author_positions/edit/{{ row.id }}">
+            <td><input name="journal_name" value="{{ row.journal_name }}"></td>
+            <td><input name="author_name" value="{{ row.author_name }}"></td>
+            <td><input name="position" value="{{ row.position }}"></td>
+            <td><input name="price" value="{{ row.price }}"></td>
+            <td>
+                <button type="submit">Save</button>
+                <a href="/admin/author_positions/delete/{{ row.id }}">Delete</a>
+            </td>
+        </form>
+    </tr>
     {% endfor %}
+</table>
 
-{% endfor %}
 {% endblock %}

@@ -11,6 +11,8 @@ import json
 import os
 from dotenv import load_dotenv
 from google_auth_oauthlib.flow import Flow
+from models import AuthorPosition
+
 
 # --------------------------------------------------------
 # INITIAL SETUP
@@ -26,7 +28,10 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback_secret')
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
+from extensions import db
+db.init_app(app)
+
 
 # Mail Config
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
@@ -404,8 +409,9 @@ def load_author_positions_from_excel(filepath=None):
 
 @app.route('/authors')
 def authors_cards():
-    AUTHOR_POSITIONS = load_author_positions_from_excel()
-    return render_template('author_cards.html', author_positions=AUTHOR_POSITIONS)
+    data = AuthorPosition.query.all()
+    return render_template('author_cards.html', author_positions=data)
+
 
 
 
