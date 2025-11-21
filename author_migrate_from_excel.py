@@ -1,40 +1,44 @@
-from app import app, db, load_author_positions_from_excel
+from app import app, db
 from models import AuthorSheet, AuthorTable, AuthorPosition
+from app import load_author_positions_from_excel
 
-with app.app_context():
-    sheets = load_author_positions_from_excel()
+def migrate_excel_to_db():
+    with app.app_context():
 
-    # safety: purana data clear (agar kuch hai)
-    AuthorPosition.query.delete()
-    AuthorTable.query.delete()
-    AuthorSheet.query.delete()
-    db.session.commit()
+        # Load excel data
+        sheets = load_author_positions_from_excel()
 
-    for sheet_data in sheets:
-        # sheet_data: { "sheet": name, "info": "...", "tables": [...] }
-        sheet = AuthorSheet(
-            name=sheet_data.get("sheet", ""),
-            info=sheet_data.get("info", "")
-        )
-        db.session.add(sheet)
-        db.session.flush()  # taa ki sheet.id mil jaye
+        # Clear old data
+        AuthorPosition.query.delete()
+        AuthorTable.query.delete()
+        AuthorSheet.query.delete()
+        db.session.commit()
 
-        for t in sheet_data.get("tables", []):
-            table = AuthorTable(
-                sheet_id=sheet.id,
-                title=t.get("title", "")
+        # Insert new structured data
+        for sheet_data in sheets:
+            sheet = AuthorSheet(
+                name=sheet_data.get("sheet", ""),
+                info=sheet_data.get("info", "")
             )
-            db.session.add(table)
+            db.session.add(sheet)
             db.session.flush()
 
-            for a in t.get("authors", []):
-                pos = AuthorPosition(
-                    table_id=table.id,
-                    level=a.get("level", ""),
-                    amount=a.get("price", ""),
-                    status=a.get("status", "")
+            for table_data in sheet_data.get("tables", []):
+                table = AuthorTable(
+                    sheet_id=sheet.id,
+                    title=table_data.get("title", "")
                 )
-                db.session.add(pos)
+                db.session.add(table)
+                db.session.flush()
 
-    db.session.commit()
-    print("✅ Author data migrated from Excel to DB!")
+                for author in table_data.get("authors", []):
+                    pos = AuthorPosition(
+                        table_id=table.id,
+                        level=author.get("level", ""),
+                        amount=author.get("price", ""),
+                        status=author.get("status", "")
+                    )
+                    db.session.add(pos)
+
+        db.session.commit()
+        print("Migration Completed from Excel")

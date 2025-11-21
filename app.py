@@ -894,6 +894,15 @@ def admin_excel_manager():
             message = "Excel updated successfully!"
     return render_template('admin/excel_manager.html', message=message)
 
+@app.route("/admin/run-migration")
+def run_migration():
+    if not session.get("admin"):
+        return "Unauthorized", 401
+
+    from author_migrate_from_excel import migrate_excel_to_db
+    migrate_excel_to_db()
+    return "Migration Completed!"
+
 
 
 @app.route('/admin/author-positions')
