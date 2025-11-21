@@ -409,8 +409,8 @@ def load_author_positions_from_excel(filepath=None):
 
 @app.route('/authors')
 def authors_cards():
-    data = AuthorPosition.query.all()
-    return render_template('author_cards.html', author_positions=data)
+    sheets = AuthorSheet.query.all()
+    return render_template('author_cards.html', sheets=sheets)
 
 
 
